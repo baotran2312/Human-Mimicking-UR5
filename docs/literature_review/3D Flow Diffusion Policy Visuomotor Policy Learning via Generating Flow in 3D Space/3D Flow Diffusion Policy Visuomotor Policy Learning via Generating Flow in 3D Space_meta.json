@@ -1,0 +1,900 @@
+{
+  "table_of_contents": [
+    {
+      "title": "3D Flow Diffusion Policy:",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          214.55859375,
+          72.31640625
+        ],
+        [
+          396.1982116699219,
+          72.31640625
+        ],
+        [
+          396.1982116699219,
+          88.748779296875
+        ],
+        [
+          214.55859375,
+          88.748779296875
+        ]
+      ]
+    },
+    {
+      "title": "Visuomotor Policy Learning via Generating Flow in 3D Space",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          88.36200714111328,
+          92.42578125
+        ],
+        [
+          523.6409912109375,
+          92.42578125
+        ],
+        [
+          523.6409912109375,
+          108.67376708984375
+        ],
+        [
+          88.36200714111328,
+          108.67376708984375
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          134.47265625,
+          431.96484375
+        ],
+        [
+          215.28225708007812,
+          431.96484375
+        ],
+        [
+          215.28225708007812,
+          443.37823486328125
+        ],
+        [
+          134.47265625,
+          443.37823486328125
+        ]
+      ]
+    },
+    {
+      "title": "II. RELATED WORKS",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          130.2890625,
+          353.84765625
+        ],
+        [
+          221.81817626953125,
+          353.84765625
+        ],
+        [
+          221.81817626953125,
+          364.5661926269531
+        ],
+        [
+          130.2890625,
+          364.5661926269531
+        ]
+      ]
+    },
+    {
+      "title": "A. Visual Imitation Learning",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          52.294921875,
+          371.8351135253906
+        ],
+        [
+          172.32579040527344,
+          371.8351135253906
+        ],
+        [
+          172.32579040527344,
+          381.7976989746094
+        ],
+        [
+          52.294921875,
+          381.7976989746094
+        ]
+      ]
+    },
+    {
+      "title": "B. Flow-Based Representations for Robotic Manipulation",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          311.37890625,
+          108.9010009765625
+        ],
+        [
+          549.552734375,
+          108.9010009765625
+        ],
+        [
+          549.552734375,
+          119.109375
+        ],
+        [
+          311.37890625,
+          119.109375
+        ]
+      ]
+    },
+    {
+      "title": "III. PROBLEM STATEMENT",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          377.71875,
+          537.15234375
+        ],
+        [
+          492.8990173339844,
+          537.15234375
+        ],
+        [
+          492.8990173339844,
+          547.4169769287109
+        ],
+        [
+          377.71875,
+          547.4169769287109
+        ]
+      ]
+    },
+    {
+      "title": "3D Flow Diffusion Policy",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          129.392578125,
+          56.07421875
+        ],
+        [
+          282.0,
+          56.07421875
+        ],
+        [
+          282.0,
+          69.22265625
+        ],
+        [
+          129.392578125,
+          69.22265625
+        ]
+      ]
+    },
+    {
+      "title": "Network Structure",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          392.0625,
+          54.75
+        ],
+        [
+          510.0,
+          54.75
+        ],
+        [
+          510.0,
+          66.12890625
+        ],
+        [
+          392.0625,
+          66.12890625
+        ]
+      ]
+    },
+    {
+      "title": "IV. METHOD",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          405.0,
+          407.21484375
+        ],
+        [
+          464.080078125,
+          407.21484375
+        ],
+        [
+          464.080078125,
+          417.0
+        ],
+        [
+          405.0,
+          417.0
+        ]
+      ]
+    },
+    {
+      "title": "A. Motivation",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          309.884765625,
+          422.68359375
+        ],
+        [
+          371.25,
+          422.68359375
+        ],
+        [
+          371.25,
+          432.0
+        ],
+        [
+          309.884765625,
+          432.0
+        ]
+      ]
+    },
+    {
+      "title": "B. Perception",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          310.78125,
+          599.02734375
+        ],
+        [
+          369.75,
+          599.02734375
+        ],
+        [
+          369.75,
+          610.5
+        ],
+        [
+          310.78125,
+          610.5
+        ]
+      ]
+    },
+    {
+      "title": "C. 3D Scene Flow",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          52.5,
+          192.75
+        ],
+        [
+          130.5,
+          192.75
+        ],
+        [
+          130.5,
+          202.5
+        ],
+        [
+          52.5,
+          202.5
+        ]
+      ]
+    },
+    {
+      "title": "D. Flow-Conditioned Policy Learning",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          52.5,
+          576.75
+        ],
+        [
+          210.0,
+          576.75
+        ],
+        [
+          210.0,
+          585.87890625
+        ],
+        [
+          52.5,
+          585.87890625
+        ]
+      ]
+    },
+    {
+      "title": "E. Implementation Details",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          311.25,
+          390.19921875
+        ],
+        [
+          422.25,
+          390.0
+        ],
+        [
+          422.25,
+          399.0
+        ],
+        [
+          311.25,
+          400.5
+        ]
+      ]
+    },
+    {
+      "title": "V. EXPERIMENTS",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          136.564453125,
+          465.99609375
+        ],
+        [
+          214.5,
+          465.99609375
+        ],
+        [
+          214.5,
+          475.5
+        ],
+        [
+          136.564453125,
+          475.5
+        ]
+      ]
+    },
+    {
+      "title": "A. Simulation Experiments",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          52.5,
+          484.5
+        ],
+        [
+          165.0,
+          484.5
+        ],
+        [
+          165.0,
+          494.25
+        ],
+        [
+          52.5,
+          494.25
+        ]
+      ]
+    },
+    {
+      "title": "B. Real-world Experiments",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          311.677734375,
+          623.77734375
+        ],
+        [
+          424.8807678222656,
+          623.77734375
+        ],
+        [
+          424.8807678222656,
+          633.8145599365234
+        ],
+        [
+          311.677734375,
+          633.8145599365234
+        ]
+      ]
+    },
+    {
+      "title": "VI. CONCLUSION",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          396.75,
+          500.02734375
+        ],
+        [
+          474.75,
+          500.02734375
+        ],
+        [
+          474.75,
+          510.0
+        ],
+        [
+          396.75,
+          510.0
+        ]
+      ]
+    },
+    {
+      "title": "ACKNOWLEDGMENT",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          390.75,
+          679.46484375
+        ],
+        [
+          479.25,
+          679.46484375
+        ],
+        [
+          479.25,
+          688.5
+        ],
+        [
+          390.75,
+          688.5
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          147.322265625,
+          54.4814453125
+        ],
+        [
+          204.3016815185547,
+          54.4814453125
+        ],
+        [
+          204.3016815185547,
+          64.44403076171875
+        ],
+        [
+          147.322265625,
+          64.44403076171875
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          185
+        ],
+        [
+          "Line",
+          89
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Footnote",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          299
+        ],
+        [
+          "Line",
+          114
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "ListItem",
+          6
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "ListGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          113
+        ],
+        [
+          "Span",
+          66
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          5
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          125
+        ],
+        [
+          "Span",
+          106
+        ],
+        [
+          "Text",
+          13
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "SectionHeader",
+          3
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          86
+        ],
+        [
+          "TableCell",
+          71
+        ],
+        [
+          "Span",
+          35
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Caption",
+          5
+        ],
+        [
+          "Reference",
+          4
+        ],
+        [
+          "Table",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "ListItem",
+          2
+        ],
+        [
+          "TableGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          169
+        ],
+        [
+          "Line",
+          47
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          106
+        ],
+        [
+          "Span",
+          46
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "ListItem",
+          8
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          518
+        ],
+        [
+          "Line",
+          150
+        ],
+        [
+          "ListItem",
+          42
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          39
+        ],
+        [
+          "Line",
+          14
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\3D Flow Diffusion Policy Visuomotor Policy Learning via Generating Flow in 3D Space"
+}

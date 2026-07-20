@@ -1,0 +1,30 @@
+# Python environment
+.venv/
+venv/
+env_isaacsim/
+env_isaaclab/
+__pycache__/
+*.pyc
+
+# Logs & temp files
+*.log
+*.tmp
+.system_generated/
+.idea/
+.vscode/
+
+# Large media files
+*.mp4
+*.avi
+*.mkv
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# AI / Deep Learning Weights
+*.pt
+*.pth
+*.onnx
+*.bin
+*.pkl

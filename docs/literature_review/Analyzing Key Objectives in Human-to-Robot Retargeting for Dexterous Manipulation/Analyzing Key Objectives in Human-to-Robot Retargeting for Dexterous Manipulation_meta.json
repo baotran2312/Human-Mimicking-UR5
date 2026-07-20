@@ -1,0 +1,814 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Analyzing Key Objectives in Human-to-Robot\nRetargeting for Dexterous Manipulation",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          77.6953125,
+          56.84765625
+        ],
+        [
+          534.3046875,
+          56.84765625
+        ],
+        [
+          534.3046875,
+          110.4320068359375
+        ],
+        [
+          77.6953125,
+          110.4320068359375
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          134.173828125,
+          431.96484375
+        ],
+        [
+          213.3751983642578,
+          431.96484375
+        ],
+        [
+          213.3751983642578,
+          442.6682434082031
+        ],
+        [
+          134.173828125,
+          442.6682434082031
+        ]
+      ]
+    },
+    {
+      "title": "II. METHOD",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          146.126953125,
+          248.66015625
+        ],
+        [
+          201.75,
+          248.66015625
+        ],
+        [
+          201.75,
+          258.0
+        ],
+        [
+          146.126953125,
+          258.0
+        ]
+      ]
+    },
+    {
+      "title": "III. EVALUATIONS AND RESULTS",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          102.0,
+          407.21484375
+        ],
+        [
+          245.25,
+          407.21484375
+        ],
+        [
+          245.25,
+          417.75
+        ],
+        [
+          102.0,
+          417.75
+        ]
+      ]
+    },
+    {
+      "title": "A. Evaluation Setup",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          47.21484375,
+          422.68359375
+        ],
+        [
+          132.0,
+          422.68359375
+        ],
+        [
+          132.0,
+          433.5
+        ],
+        [
+          47.21484375,
+          433.5
+        ]
+      ]
+    },
+    {
+      "title": "B. Analysis of Results",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          310.5,
+          555.0
+        ],
+        [
+          403.5,
+          555.0
+        ],
+        [
+          403.5,
+          564.75
+        ],
+        [
+          310.5,
+          564.75
+        ]
+      ]
+    },
+    {
+      "title": "C. Comparison with Existing Retargeting Approaches",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          48.0,
+          602.12109375
+        ],
+        [
+          270.75,
+          602.12109375
+        ],
+        [
+          270.75,
+          610.62890625
+        ],
+        [
+          48.0,
+          610.62890625
+        ]
+      ]
+    },
+    {
+      "title": "IV. CONCLUSION",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          135.369140625,
+          602.12109375
+        ],
+        [
+          212.1514129638672,
+          602.12109375
+        ],
+        [
+          212.1514129638672,
+          613.8349609375
+        ],
+        [
+          135.369140625,
+          613.8349609375
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          409.095703125,
+          546.43359375
+        ],
+        [
+          465.873046875,
+          546.43359375
+        ],
+        [
+          465.873046875,
+          559.0368347167969
+        ],
+        [
+          409.095703125,
+          559.0368347167969
+        ]
+      ]
+    },
+    {
+      "title": "APPENDIX",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          149.4140625,
+          56.25
+        ],
+        [
+          197.25,
+          56.25
+        ],
+        [
+          197.25,
+          64.5
+        ],
+        [
+          149.4140625,
+          64.5
+        ]
+      ]
+    },
+    {
+      "title": "ADDITIONAL KINEMATIC POSTURE RETARGETING\nRESULTS",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          64.546875,
+          72.31640625
+        ],
+        [
+          282.0,
+          72.31640625
+        ],
+        [
+          282.0,
+          93.0
+        ],
+        [
+          64.546875,
+          93.0
+        ]
+      ]
+    },
+    {
+      "title": "EXPLANATION OF JOINT VELOCITY REGULARIZATION\nTERM",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          57.97265625,
+          165.0
+        ],
+        [
+          289.5,
+          165.0
+        ],
+        [
+          289.5,
+          185.23828125
+        ],
+        [
+          57.97265625,
+          185.23828125
+        ]
+      ]
+    },
+    {
+      "title": "IMPLEMENTATION",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          395.947265625,
+          188.25
+        ],
+        [
+          476.25,
+          188.25
+        ],
+        [
+          476.25,
+          196.5
+        ],
+        [
+          395.947265625,
+          196.5
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          223
+        ],
+        [
+          "Line",
+          97
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Footnote",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          129
+        ],
+        [
+          "Span",
+          86
+        ],
+        [
+          "Text",
+          16
+        ],
+        [
+          "Equation",
+          8
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "Reference",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          108
+        ],
+        [
+          "Span",
+          43
+        ],
+        [
+          "TableCell",
+          18
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "Reference",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          87
+        ],
+        [
+          "Span",
+          8
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Figure",
+          3
+        ],
+        [
+          "Caption",
+          3
+        ],
+        [
+          "FigureGroup",
+          3
+        ],
+        [
+          "Reference",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          123
+        ],
+        [
+          "Span",
+          21
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          217
+        ],
+        [
+          "Line",
+          85
+        ],
+        [
+          "TableCell",
+          14
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "Reference",
+          4
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          347
+        ],
+        [
+          "Line",
+          103
+        ],
+        [
+          "ListItem",
+          30
+        ],
+        [
+          "Reference",
+          15
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          106
+        ],
+        [
+          "Span",
+          29
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          98
+        ],
+        [
+          "Span",
+          46
+        ],
+        [
+          "TableCell",
+          20
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Reference",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          114
+        ],
+        [
+          "Line",
+          45
+        ],
+        [
+          "Text",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\Analyzing Key Objectives in Human-to-Robot Retargeting for Dexterous Manipulation"
+}

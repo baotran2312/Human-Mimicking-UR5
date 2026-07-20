@@ -1,0 +1,1039 @@
+{
+  "table_of_contents": [
+    {
+      "title": "A2J-Transformer: Anchor-to-Joint Transformer Network for 3D Interacting\nHand Pose Estimation from a Single RGB Image",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          63.3515625,
+          105.57421875
+        ],
+        [
+          531.9140625,
+          105.57421875
+        ],
+        [
+          531.9140625,
+          138.201171875
+        ],
+        [
+          63.3515625,
+          138.201171875
+        ]
+      ]
+    },
+    {
+      "title": "Abstract",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          144.6328125,
+          315.94921875
+        ],
+        [
+          190.4803009033203,
+          315.94921875
+        ],
+        [
+          190.4803009033203,
+          328.1304016113281
+        ],
+        [
+          144.6328125,
+          328.1304016113281
+        ]
+      ]
+    },
+    {
+      "title": "1. Introduction",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          308.689453125,
+          498.59912109375
+        ],
+        [
+          385.69805908203125,
+          498.59912109375
+        ],
+        [
+          385.69805908203125,
+          510.5543212890625
+        ],
+        [
+          308.689453125,
+          510.5543212890625
+        ]
+      ]
+    },
+    {
+      "title": "2. Related Works",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          307.1953125,
+          455.6751708984375
+        ],
+        [
+          396.62506103515625,
+          455.6751708984375
+        ],
+        [
+          396.62506103515625,
+          467.63037109375
+        ],
+        [
+          307.1953125,
+          467.63037109375
+        ]
+      ]
+    },
+    {
+      "title": "3. A2J-Transformer: Anchor-to-Joint Trans-\nformer Network",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          49.0078125,
+          188.71875
+        ],
+        [
+          286.35870361328125,
+          188.71875
+        ],
+        [
+          286.35870361328125,
+          215.25634765625
+        ],
+        [
+          49.0078125,
+          215.25634765625
+        ]
+      ]
+    },
+    {
+      "title": "3.1. Pyramid feature extractor",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          49.0078125,
+          265.67578125
+        ],
+        [
+          192.02975463867188,
+          265.67578125
+        ],
+        [
+          192.02975463867188,
+          276.98773193359375
+        ],
+        [
+          49.0078125,
+          276.98773193359375
+        ]
+      ]
+    },
+    {
+      "title": "3.2. Anchor refinement model",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          48.41015625,
+          446.5476989746094
+        ],
+        [
+          189.01605224609375,
+          446.5476989746094
+        ],
+        [
+          189.01605224609375,
+          457.506591796875
+        ],
+        [
+          48.41015625,
+          457.506591796875
+        ]
+      ]
+    },
+    {
+      "title": "3.2.1 Feature enhancement module",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          49.0078125,
+          524.77734375
+        ],
+        [
+          205.7477264404297,
+          524.77734375
+        ],
+        [
+          205.7477264404297,
+          537.2379302978516
+        ],
+        [
+          49.0078125,
+          537.2379302978516
+        ]
+      ]
+    },
+    {
+      "title": "3.2.2 Anchor interaction module",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          306.896484375,
+          456.71484375
+        ],
+        [
+          453.86761474609375,
+          456.71484375
+        ],
+        [
+          453.86761474609375,
+          467.488037109375
+        ],
+        [
+          306.896484375,
+          467.488037109375
+        ]
+      ]
+    },
+    {
+      "title": "3.3. Anchor offset-weight estimation model",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          48.0,
+          528.75
+        ],
+        [
+          251.25,
+          528.75
+        ],
+        [
+          251.25,
+          539.47265625
+        ],
+        [
+          48.0,
+          539.47265625
+        ]
+      ]
+    },
+    {
+      "title": "3.4. Loss functions",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          48.41015625,
+          140.765625
+        ],
+        [
+          136.57774353027344,
+          140.765625
+        ],
+        [
+          136.57774353027344,
+          151.74774169921875
+        ],
+        [
+          48.41015625,
+          151.74774169921875
+        ]
+      ]
+    },
+    {
+      "title": "4. Experiments",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          49.306640625,
+          578.5361480712891
+        ],
+        [
+          127.15131378173828,
+          578.5361480712891
+        ],
+        [
+          127.15131378173828,
+          590.4913482666016
+        ],
+        [
+          49.306640625,
+          590.4913482666016
+        ]
+      ]
+    },
+    {
+      "title": "4.1. Experimental setting",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          48.111328125,
+          598.2298278808594
+        ],
+        [
+          166.9996337890625,
+          598.2298278808594
+        ],
+        [
+          166.9996337890625,
+          609.188720703125
+        ],
+        [
+          48.111328125,
+          609.188720703125
+        ]
+      ]
+    },
+    {
+      "title": "4.1.1 Datasets",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          49.306640625,
+          616.9275054931641
+        ],
+        [
+          115.96478271484375,
+          616.9275054931641
+        ],
+        [
+          115.96478271484375,
+          626.8901062011719
+        ],
+        [
+          49.306640625,
+          626.8901062011719
+        ]
+      ]
+    },
+    {
+      "title": "4.1.2 Evaluation metrics",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          307.79296875,
+          257.94140625
+        ],
+        [
+          419.1778564453125,
+          257.94140625
+        ],
+        [
+          419.1778564453125,
+          268.4991455078125
+        ],
+        [
+          307.79296875,
+          268.4991455078125
+        ]
+      ]
+    },
+    {
+      "title": "4.1.3 Implementation details",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          308.8620300292969,
+          431.96484375
+        ],
+        [
+          436.99102783203125,
+          431.96484375
+        ],
+        [
+          436.99102783203125,
+          443.4739990234375
+        ],
+        [
+          308.8620300292969,
+          443.4739990234375
+        ]
+      ]
+    },
+    {
+      "title": "4.2. Results",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          308.091796875,
+          576.45166015625
+        ],
+        [
+          362.1331787109375,
+          576.45166015625
+        ],
+        [
+          362.1331787109375,
+          587.4105529785156
+        ],
+        [
+          308.091796875,
+          587.4105529785156
+        ]
+      ]
+    },
+    {
+      "title": "4.3. Ablation study",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          308.86199951171875,
+          462.90234375
+        ],
+        [
+          398.0390625,
+          462.90234375
+        ],
+        [
+          398.0390625,
+          474.7445373535156
+        ],
+        [
+          308.86199951171875,
+          474.7445373535156
+        ]
+      ]
+    },
+    {
+      "title": "4.3.1 Component effectiveness analysis",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          307.79296875,
+          481.46484375
+        ],
+        [
+          481.11328125,
+          481.46484375
+        ],
+        [
+          481.11328125,
+          493.044921875
+        ],
+        [
+          307.79296875,
+          493.044921875
+        ]
+      ]
+    },
+    {
+      "title": "4.3.2 Anchor setting analysis",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          48.41015625,
+          455.2924499511719
+        ],
+        [
+          179.0778350830078,
+          455.2924499511719
+        ],
+        [
+          179.0778350830078,
+          465.2550354003906
+        ],
+        [
+          48.41015625,
+          465.2550354003906
+        ]
+      ]
+    },
+    {
+      "title": "4.4. Qualitative evaluation and limitation",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          48.41015625,
+          612.6017303466797
+        ],
+        [
+          241.42149353027344,
+          612.6017303466797
+        ],
+        [
+          241.42149353027344,
+          623.5606231689453
+        ],
+        [
+          48.41015625,
+          623.5606231689453
+        ]
+      ]
+    },
+    {
+      "title": "5. Conclusion",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          306.896484375,
+          409.7701416015625
+        ],
+        [
+          377.95111083984375,
+          409.7701416015625
+        ],
+        [
+          377.95111083984375,
+          421.725341796875
+        ],
+        [
+          306.896484375,
+          421.725341796875
+        ]
+      ]
+    },
+    {
+      "title": "Acknowledgment",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          306.59765625,
+          598.5810546875
+        ],
+        [
+          397.7369384765625,
+          598.5810546875
+        ],
+        [
+          397.7369384765625,
+          610.5362548828125
+        ],
+        [
+          306.59765625,
+          610.5362548828125
+        ]
+      ]
+    },
+    {
+      "title": "References",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          49.60546875,
+          72.31640625
+        ],
+        [
+          105.65585327148438,
+          72.31640625
+        ],
+        [
+          105.65585327148438,
+          84.7423095703125
+        ],
+        [
+          49.60546875,
+          84.7423095703125
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          180
+        ],
+        [
+          "Line",
+          75
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Footnote",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          223
+        ],
+        [
+          "Line",
+          106
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          100
+        ],
+        [
+          "Span",
+          29
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          266
+        ],
+        [
+          "Line",
+          98
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          5
+        ],
+        [
+          "Picture",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Equation",
+          2
+        ],
+        [
+          "PictureGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          102
+        ],
+        [
+          "Span",
+          94
+        ],
+        [
+          "TableCell",
+          20
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "Equation",
+          5
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          304
+        ],
+        [
+          "Line",
+          103
+        ],
+        [
+          "Text",
+          16
+        ],
+        [
+          "SectionHeader",
+          7
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          314
+        ],
+        [
+          "TableCell",
+          125
+        ],
+        [
+          "Line",
+          104
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Table",
+          4
+        ],
+        [
+          "Caption",
+          4
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "TableGroup",
+          4
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          203
+        ],
+        [
+          "Line",
+          88
+        ],
+        [
+          "TableCell",
+          62
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Caption",
+          5
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "Table",
+          2
+        ],
+        [
+          "TableGroup",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          421
+        ],
+        [
+          "Line",
+          115
+        ],
+        [
+          "ListItem",
+          27
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          425
+        ],
+        [
+          "Line",
+          114
+        ],
+        [
+          "ListItem",
+          26
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\A2J-Transformer Anchor-to-Joint Transformer Network for 3D Interacting Hand Pose Estimation from a Single RGB Image"
+}
