@@ -4,8 +4,9 @@ import math
 import numpy as np
 import os
 import sys
+import argparse
 
-# Thêm thư mục hiện tại vào path để import được retargeting_solver
+# Thêm thư mục hiện tại vào path để import các module local
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
@@ -20,11 +21,23 @@ except ImportError as e:
     print(f"[ERROR] Không thể import RetargetingSolver: {e}")
     exit(1)
 
+try:
+    from udp_bridge import UDPBridge
+except ImportError as e:
+    print(f"[ERROR] Không thể import UDPBridge: {e}")
+    exit(1)
+
 def calculate_distance(p1, p2):
     """Tính khoảng cách Euclid giữa 2 điểm 3D (x, y, z)"""
     return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2 + (p1.z - p2.z)**2)
 
 def main():
+    # Sử dụng argparse để tùy chỉnh cấu hình mạng qua terminal
+    parser = argparse.ArgumentParser(description="AnyTeleop HIL Camera Stream and UDP Bridge")
+    parser.add_argument("--ip", type=str, default="127.0.0.1", help="Target IP address for UDP receiver (PC)")
+    parser.add_argument("--port", type=int, default=5005, help="Target UDP port")
+    args = parser.parse_args()
+
     # Khởi tạo bộ giải động học ngược (IK)
     urdf_path = "config/ur5dex.urdf"
     try:
@@ -32,6 +45,9 @@ def main():
     except Exception as e:
         print(f"[ERROR] Lỗi khởi tạo RetargetingSolver: {e}")
         return
+
+    # Khởi tạo UDP Bridge
+    udp = UDPBridge(ip=args.ip, port=args.port)
 
     # Khởi tạo MediaPipe Hands
     mp_hands = mp.solutions.hands
@@ -51,6 +67,7 @@ def main():
 
     print("\n==================================================================")
     print(" BẮT ĐẦU ĐIỀU KHIỂN & GIẢI ĐỘNG HỌC NGƯỢC THỜI GIAN THỰC (HIL)")
+    print(f" Đang truyền gói tin UDP đến -> {args.ip}:{args.port}")
     print(" Cử động tay trước camera để thấy góc khớp tính toán liên tục.")
     print(" Nhấn phím 'q' trong cửa sổ hiển thị để THOÁT.")
     print("==================================================================\n")
@@ -102,7 +119,10 @@ def main():
                 # Giải động học ngược cánh tay UR5
                 arm_angles = solver.solve_arm_ik([target_x, target_y, target_z], target_quat)
                 
-                # --- 3. IN KẾT QUẢ LIÊN TỤC RA TERMINAL ---
+                # --- 3. TRUYỀN GÓC KHỚP QUA UDP BRIDGE ---
+                udp.send_joint_angles(arm_angles, finger_angles)
+
+                # --- 4. IN KẾT QUẢ LIÊN TỤC RA TERMINAL ---
                 print(f"FPS: {fps:.1f} | Latency: {latency:.1f}ms")
                 print(f"  Target TCP: X={target_x:.3f}, Y={target_y:.3f}, Z={target_z:.3f}")
                 print(f"  UR5 Joints: {np.round(arm_angles, 3)}")
@@ -127,7 +147,8 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
     solver.disconnect()
-    print("[INFO] Đã ngắt kết nối.")
+    udp.close()
+    print("[INFO] Đã ngắt kết nối và đóng cổng UDP.")
 
 if __name__ == "__main__":
     main()
