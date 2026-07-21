@@ -1,6 +1,6 @@
-# Manuscript Draft: Problem Formulation & Proposed Scheme (Revised - Ver 4)
+# Manuscript Draft: Problem Formulation & Proposed Scheme (Revised - Ver 5)
 
-This document contains the revised draft of the **Problem Formulation** and **Proposed Scheme** sections, resolving all structural issues in null-space DLS leakage integration, LKF cross-term bounding, filter phase-lag modeling, gradient saturation for collision avoidance, and task-space specifications.
+This document contains the revised draft of the **Problem Formulation** and **Proposed Scheme** sections, resolving the theoretical inconsistencies in stochastic modeling, jitter boundedness, null-space saturation limits, and dexterous hand posture synergy.
 
 ---
 
@@ -18,20 +18,23 @@ Differentiating the forward kinematics yields the differential kinematics:
 $$v(t) = J(q(t))\dot{q}(t)$$
 where $v(t) = [\dot{p}_w^T(t), \omega_w^T(t), \dot{d}_f^T(t)]^T \in \mathbb{R}^m$ is the spatial task-space velocity vector ($\omega_w$ being the physical angular velocity of the wrist), and $J(q(t)) \in \mathbb{R}^{m \times n}$ is the analytical system Jacobian.
 
-In a remote teleoperation setup, the desired trajectory $x_d(t)$ is commanded by a human operator through a vision-based hand tracker. Due to webcam exposure latency, image processing time, and network transmission, the reference trajectory received by the controller experiences a time-varying delay $\tau(t)$. The delay $\tau(t)$ is modeled as a stochastic process following a log-normal distribution to replicate real-world WiFi and 5G network jitter:
+In a remote teleoperation setup, the desired trajectory $x_d(t)$ is commanded by a human operator through a vision-based hand tracker. The controller receives $x_d(t)$ under an unknown but deterministic time-varying communication delay $\tau(t)$, satisfying the following conditions:
 
 **Assumption 1**: The communication delay $\tau(t)$ is continuous and bounded such that:
 $$0 \le \tau(t) \le \tau_m, \quad \forall t \ge 0$$
 where $\tau_m$ is a known upper bound of the latency.
 
-**Assumption 2**: The rate of change of the delay is bounded on both sides to prevent control signal chattering during sudden network recovery (jitter):
+**Assumption 2**: The rate of change of the true delay is bounded on both sides to prevent unstable tracking:
 $$|\dot{\tau}(t)| \le d < 1, \quad \forall t \ge 0$$
+
+**Assumption 3**: The measured latency consists of a true delay $\tau_{true}(t)$ satisfying Assumptions 1 and 2, and a high-frequency bounded measurement noise $n(t)$ representing network packet jitter:
+$$\tau(t) = \tau_{true}(t) + n(t), \quad \|n(t)\| \le n_{max}$$
 
 Under delayed teleoperation, the task-space tracking error $e(t) \in \mathbb{R}^m$ is defined as:
 $$e(t) = \begin{bmatrix} e_p(t) \\ e_o(t) \\ e_f(t) \end{bmatrix} = \begin{bmatrix} p_{d}(t-\tau(t)) - p_w(t) \\ \eta_d(t-\tau(t))\epsilon(t) - \eta(t)\epsilon_d(t-\tau(t)) - \epsilon^\times(t)\epsilon_d(t-\tau(t)) \\ d_{d}(t-\tau(t)) - d_f(t) \end{bmatrix}$$
 where $e_o(t) \in \mathbb{R}^3$ represents the quaternion-based orientation error, and $\epsilon^\times$ is the skew-symmetric matrix of $\epsilon$.
 
-The primary control objective is to design a joint velocity controller $\dot{q}(t)$ that guarantees Input-to-State Stability (ISS) of the tracking error under Assumptions 1 and 2, while utilizing the null-space to safely avoid joint limits and self-collisions.
+The primary control objective is to design a joint velocity controller $\dot{q}(t)$ that guarantees Input-to-State Stability (ISS) of the tracking error under Assumptions 1, 2, and 3, while utilizing the null-space to safely avoid joint limits, self-collisions, and unnatural hand configurations.
 
 ---
 
@@ -51,8 +54,8 @@ Substituting the control law into the differential kinematics yields the closed-
 $$\dot{e}(t) = -E(e_o) \left[ K_p e(t) + K_d e(t - \tau(t)) \right] + d_t(t)$$
 where $E(e_o) = \text{diag}\left(I_3, \frac{1}{2}(\eta_e I_3 + \epsilon_e^\times), I_{5}\right)$ is the orientation scaling matrix, and $d_t(t)$ is the aggregate perturbation term:
 $$d_t(t) = d_s(t) + d_f(t) + d_l(t)$$
-*   $d_s(t) = \left( J J^{\dagger}_{DLS} - I_m \right) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau(t)) \right]$ is the damping-induced perturbation.
-*   $d_f(t) = v_d(t - \tau(t)) \left( \dot{\tau}_{filt}(t) - \dot{\tau}(t) \right)$ represents the feedforward error caused by the low-pass filter phase lag.
+*   $d_s(t) = \left( J J^{\dagger}_{DLS} - I_m \right) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau(t)) \right]$ is the damping perturbation.
+*   $d_f(t) = v_d(t - \tau(t)) \left( \dot{\tau}_{filt}(t) - \dot{\tau}(t) \right)$ is the feedforward error caused by the low-pass filter phase lag. Because $n(t)$ and $v_d$ are bounded, the lag perturbation $d_f(t)$ remains bounded.
 *   $d_l(t) = -J(q)\left( I_n - J^{\dagger}_{DLS}(q)J(q) \right)\dot{q}_0(t)$ is the workspace leakage originating from the DLS null-space projection.
 
 **Remark 1 (Region of Attraction)**: Under local representation of orientation error, the region of attraction is defined as $\Omega_o = \{ e_o \in \mathbb{R}^3 \mid \eta_e > 0 \}$, corresponding to rotation errors of less than $180^\circ$. Within this domain, $E(e_o)$ is non-singular and converges to $I_m$ near the equilibrium state ($\eta_e \to 1, \epsilon_e \to 0$). Under this local linearization, the error dynamics simplify to:
@@ -94,18 +97,21 @@ By solving the LMI $\Omega_{ISS} > 0$ under the constraint $\begin{bmatrix} R & 
 
 ---
 
-## C. Null-Space Projection for Joint Limit and Collision Avoidance
-The secondary joint velocity vector $\dot{q}_0(t)$ is designed to push the robot joints away from physical boundaries and avoid self-collisions. We define the objective function $H(q) \in \mathbb{R}$ to be minimized:
-$$H(q) = \sum_{i=1}^{n} \left( \frac{q_i - \bar{q}_i}{q_{i,max} - q_{i,min}} \right)^2 + H_{coll}(q)$$
-where $q_{i,max}, q_{i,min}$ are the physical boundaries of the $i$-th joint, and $\bar{q}_i = \frac{q_{i,max} + q_{i,min}}{2}$. 
+## C. Null-Space Projection for Joint Limit, Collision, and Posture Avoidance
+The secondary joint velocity vector $\dot{q}_0(t)$ is designed to push the robot joints away from physical boundaries, avoid self-collisions, and guide the redundant hand joints toward natural anthropomorphic configurations to resolve the $19 - 5 = 14$ DoFs under-constraint. We define the objective function $H(q) \in \mathbb{R}$ to be minimized:
+$$H(q) = w_{lim} \sum_{i=1}^{n} \left( \frac{q_i - \bar{q}_i}{q_{i,max} - q_{i,min}} \right)^2 + H_{coll}(q) + w_{post} \sum_{j=7}^{25} \left( q_j - q_{j,nom} \right)^2$$
+where:
+*   $q_{i,max}, q_{i,min}$ are the physical boundaries of the $i$-th joint, and $\bar{q}_i = \frac{q_{i,max} + q_{i,min}}{2}$.
+*   $q_{j,nom}$ denotes the nominal natural posture joint angle of the $j$-th hand joint, calibrated from the operator's relaxed hand position.
+*   $w_{lim}$ and $w_{post}$ are positive weight parameters.
 
 To prevent gradient explosion and chattering in discrete-time execution (100 Hz), the collision potential $H_{coll}(q)$ is active only within a finite influence distance $d_{influence} > 0$:
-$$H_{coll}(q) = \sum_{j < k} \frac{\sigma}{2} \left( \frac{1}{d_{jk}(q)} - \frac{1}{d_{influence}} \right)^2 \quad \text{if } d_{jk}(q) \le d_{influence}, \text{ else } 0$$
-where $d_{jk}(q)$ is the distance between capsule representations of link $j$ and link $k$. 
+$$H_{coll}(q) = \sum_{a < b} \frac{\sigma}{2} \left( \frac{1}{d_{ab}(q)} - \frac{1}{d_{influence}} \right)^2 \quad \text{if } d_{ab}(q) \le d_{influence}, \text{ else } 0$$
+where $d_{ab}(q)$ is the distance between capsule representations of link $a$ and link $b$. 
 
-The joint velocity vector $\dot{q}_0(t)$ is defined with an element-wise saturation function to avoid high joint speeds:
+To ensure the perturbation vector $d_l(t)$ remains bounded in the LKF analysis, the gradient mapping is saturated to bound the norm of the potential vector:
 $$\dot{q}_0(t) = \text{sat}_{v_{max}} \left( -\alpha \nabla H(q) \right)$$
-where $\text{sat}_{v_{max}}(y) = \text{sign}(y) \min(|y|, v_{max})$ limits the maximum joint velocity to $v_{max}$.
+where the saturation limits the magnitude of $\dot{q}_0(t)$ to prevent infinite joint speeds.
 
 **Remark 2 (SVD-based Null-Space Leakage)**: Applying singular value decomposition (SVD) to the Jacobian $J = U \Sigma V^T$, the workspace leakage introduced by the DLS projection is given by $J \left( I_n - J^{\dagger}_{DLS}J \right) = U \text{diag}\left( \frac{\sigma_i \lambda^2}{\sigma_i^2 + \lambda^2} \right) V^T$. By AM-GM inequality, each diagonal entry is bounded by $\frac{\lambda}{2}$ for all $\sigma_i$. As the system approaches a deep singularity ($\sigma_i \to 0$), the leakage converges to zero. The maximum leakage is bounded globally by $\mathcal{O}(\lambda)$ at near-singular configurations ($\sigma_i \approx \lambda$), ensuring that the secondary tasks do not corrupt workspace accuracy.
 
