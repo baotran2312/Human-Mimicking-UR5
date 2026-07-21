@@ -1,6 +1,6 @@
 # Tổng hợp Nghiên cứu Khoa học theo cấu trúc IMRAD (UR5 & Dexterous Hand)
 
-Tài liệu này tổng hợp chi tiết **11 bài báo nghiên cứu khoa học** cốt lõi phục vụ dự án dưới cấu trúc **IMRAD** (Introduction, Methods, Results, Discussion) cho từng bài báo riêng biệt.
+Tài liệu này tổng hợp chi tiết **14 bài báo nghiên cứu khoa học** cốt lõi phục vụ dự án dưới cấu trúc **IMRAD** (Introduction, Methods, Results, Discussion) cho từng bài báo riêng biệt.
 
 ---
 
@@ -108,3 +108,30 @@ Tài liệu này tổng hợp chi tiết **11 bài báo nghiên cứu khoa học
 * **M (Methods)**: Sử dụng Foundation Model để phân tích hình ảnh vật thể, tự động xác định các điểm đặt ngón tay (grasping points) hợp lý, sau đó sinh code/quỹ đạo mô phỏng tự động để robot thực hiện trong Isaac Sim, giảm thiểu thời gian thử sai.
 * **R (Results)**: Rút ngắn thời gian thiết lập môi trường và huấn luyện đi 10 lần. Robot có khả năng cầm nắm các vật thể lạ hoàn toàn chưa từng thấy trong tập train với tỷ lệ thành công cao.
 * **D (Discussion)**: Gợi ý cho chúng ta hướng phát triển dài hạn: Khi hệ thống HIL đã chạy ổn định, chúng ta có thể dùng AI để tự động sinh ra các demo cầm nắm thay vì phải tự tay làm demo trước camera liên tục.
+
+---
+
+## 12. Deformer: Dynamic Fusion Transformer for Robust Hand Pose Estimation
+
+* **I (Introduction)**: Ước lượng tư thế tay 3D từ video gặp thách thức lớn khi bị che khuất hoặc mờ chuyển động (motion blur). Các phương pháp temporal self-attention thông thường thất bại khi đặc trưng từng khung hình bị biến dạng nặng. Bài báo đề xuất mô hình Deformer để giải quyết vấn đề này.
+* **M (Methods)**: Tích hợp một Module Dynamic Fusion dự đoán sự biến dạng (deformation) của bàn tay và dịch chuyển (warp) các lưới dự đoán bàn tay từ các khung hình lân cận rõ ràng sang hỗ trợ khung hình hiện tại. Đồng thời giới thiệu hàm loss **maxMSE** để tự động tăng trọng số tập trung vào các điểm khớp khó nhận diện (như đầu ngón tay).
+* **R (Results)**: Đạt độ chính xác vượt trội hơn 10% so với SOTA trên tập DexYCB và HO3D, đồng thời tăng 14% khả năng chống chịu các tình huống che khuất.
+* **D (Discussion)**: Thuật toán này rất hữu ích cho hệ thống HIL của chúng ta. Khi người vận hành tương tác với vật thể làm che khuất ngón tay, Deformer giúp tái tạo tư thế tay robot mượt mà bằng cách bù đắp thông tin từ các frame trước/sau.
+
+---
+
+## 13. DeltaDorsal: Enhancing Hand Pose Estimation with Dorsal Features in Egocentric Views
+
+* **I (Introduction)**: Góc nhìn thứ nhất (Egocentric) trên các thiết bị kính XR thường xuyên làm ngón tay bị che khuất bởi chính bàn tay hoặc vật thể cầm nắm. Bài báo đề xuất ước lượng tư thế tay chỉ dựa trên biến dạng da mu bàn tay (dorsum) mà không cần nhìn trực tiếp ngón tay.
+* **M (Methods)**: Thiết lập bộ mã hóa delta hai luồng (dual-stream delta encoder). Mạng so sánh các đặc trưng thị giác mu bàn tay hiện tại với tư thế baseline thả lỏng của người dùng để phân tách tín hiệu biến dạng da, từ đó suy luận ra góc khớp ngón tay 3D bên dưới.
+* **R (Results)**: Giảm 18% sai số góc khớp (MPJAE) trong các tình huống ngón tay bị che khuất nặng (>= 50%) so với mô hình toàn bàn tay SOTA như HaMeR.
+* **D (Discussion)**: Cực kỳ hữu dụng cho thiết lập camera đơn của chúng ta. Khi camera RealSense ở vị trí chéo cao nhìn xuống lòng bàn tay (làm khuất ngón tay bên dưới), ta có thể áp dụng ý tưởng của DeltaDorsal để suy luận góc ngón tay từ chuyển động mu bàn tay.
+
+---
+
+## 14. DexHiL: A Human-in-the-Loop Framework for Vision-Language-Action Model Post-Training in Dexterous Manipulation
+
+* **I (Introduction)**: Triển khai các mô hình VLA (Vision-Language-Action) trên bàn tay khéo léo gặp lỗi dịch chuyển phân phối (covariate shift) và tích lũy sai số. Học bắt chước offline đơn thuần (SFT) dễ bị bão hòa hiệu năng và sập khi gặp trạng thái lạ (OOD).
+* **M (Methods)**: Đề xuất bộ khung học trực tuyến có con người can thiệp (Human-in-the-Loop - HiL) thông qua vòng lặp DAgger. Thiết lập cơ chế can thiệp thời gian thực (nhấp chuột/phím để lấy quyền kiểm soát robot) và thuật toán lấy mẫu trọng số ưu tiên cho các phân đoạn dữ liệu sửa sai (intervention-aware reweighting) trong quá trình train.
+* **R (Results)**: Đạt hiệu năng vượt trội hơn 25% tỷ lệ thành công trung bình so với các mô hình chỉ tinh chỉnh offline trên robot thật.
+* **D (Discussion)**: Trực tiếp chứng minh tính thực tiễn của quy trình HIL chúng ta đang xây dựng. Chúng ta sẽ dùng chính hệ thống webcam teleop thời gian thực để người dùng có thể can thiệp sửa lỗi cho policy trong Isaac Sim, thu thập dữ liệu hiệu quả để tối ưu mô hình.
