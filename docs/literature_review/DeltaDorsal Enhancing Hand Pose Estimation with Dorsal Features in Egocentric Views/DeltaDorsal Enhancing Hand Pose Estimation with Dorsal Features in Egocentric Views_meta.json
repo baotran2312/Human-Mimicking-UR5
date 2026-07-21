@@ -1,0 +1,1647 @@
+{
+  "table_of_contents": [
+    {
+      "title": "DeltaDorsal: Enhancing Hand Pose Estimation with Dorsal\nFeatures in Egocentric Views",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          75.3046875,
+          82.7694091796875
+        ],
+        [
+          534.910888671875,
+          82.7694091796875
+        ],
+        [
+          534.910888671875,
+          119.902099609375
+        ],
+        [
+          75.3046875,
+          119.902099609375
+        ]
+      ]
+    },
+    {
+      "title": "William Huang",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          100.705078125,
+          130.5787353515625
+        ],
+        [
+          179.58847045898438,
+          130.5787353515625
+        ],
+        [
+          179.58847045898438,
+          142.53369140625
+        ],
+        [
+          100.705078125,
+          142.53369140625
+        ]
+      ]
+    },
+    {
+      "title": "Siyou Pei",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          282.09375,
+          130.32421875
+        ],
+        [
+          329.90625,
+          130.32421875
+        ],
+        [
+          329.90625,
+          142.53369140625
+        ],
+        [
+          282.09375,
+          142.53369140625
+        ]
+      ]
+    },
+    {
+      "title": "Leyi Zou",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          444.955078125,
+          130.32421875
+        ],
+        [
+          492.423095703125,
+          130.32421875
+        ],
+        [
+          492.423095703125,
+          142.53369140625
+        ],
+        [
+          444.955078125,
+          142.53369140625
+        ]
+      ]
+    },
+    {
+      "title": "Yang Zhang",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          437.783203125,
+          200.918701171875
+        ],
+        [
+          499.341796875,
+          200.918701171875
+        ],
+        [
+          499.341796875,
+          212.8736572265625
+        ],
+        [
+          437.783203125,
+          212.8736572265625
+        ]
+      ]
+    },
+    {
+      "title": "Abstract",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          52.59375,
+          493.83984375
+        ],
+        [
+          95.41583251953125,
+          493.83984375
+        ],
+        [
+          95.41583251953125,
+          505.0596618652344
+        ],
+        [
+          52.59375,
+          505.0596618652344
+        ]
+      ]
+    },
+    {
+      "title": "CCS Concepts",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          317.056640625,
+          571.0986328125
+        ],
+        [
+          387.22711181640625,
+          571.0986328125
+        ],
+        [
+          387.22711181640625,
+          582.0076293945312
+        ],
+        [
+          317.056640625,
+          582.0076293945312
+        ]
+      ]
+    },
+    {
+      "title": "Keywords",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          317.654296875,
+          628.8686370849609
+        ],
+        [
+          367.0345764160156,
+          628.8686370849609
+        ],
+        [
+          367.0345764160156,
+          639.7776336669922
+        ],
+        [
+          317.654296875,
+          639.7776336669922
+        ]
+      ]
+    },
+    {
+      "title": "ACM Reference Format:",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          314.3671875,
+          670.18359375
+        ],
+        [
+          404.6525573730469,
+          670.18359375
+        ],
+        [
+          404.6525573730469,
+          679.4082183837891
+        ],
+        [
+          314.3671875,
+          679.4082183837891
+        ]
+      ]
+    },
+    {
+      "title": "1 Introduction",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          53.490234375,
+          126.0703125
+        ],
+        [
+          133.3798828125,
+          126.0703125
+        ],
+        [
+          133.3798828125,
+          137.41168212890625
+        ],
+        [
+          53.490234375,
+          137.41168212890625
+        ]
+      ]
+    },
+    {
+      "title": "2 Related Work",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          317.953125,
+          362.57855224609375
+        ],
+        [
+          404.015625,
+          362.57855224609375
+        ],
+        [
+          404.015625,
+          373.4876403808594
+        ],
+        [
+          317.953125,
+          373.4876403808594
+        ]
+      ]
+    },
+    {
+      "title": "2.1 3D Hand Pose Estimation in Egocentric and\nOccluded Scenarios",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          317.953125,
+          529.9895935058594
+        ],
+        [
+          558.0533447265625,
+          529.9895935058594
+        ],
+        [
+          558.0533447265625,
+          553.8477783203125
+        ],
+        [
+          317.953125,
+          553.8477783203125
+        ]
+      ]
+    },
+    {
+      "title": "2.2 Hand Pose Estimation Leveraging Skin Features",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          53.19140625,
+          337.60546875
+        ],
+        [
+          271.5,
+          337.60546875
+        ],
+        [
+          271.5,
+          359.25
+        ],
+        [
+          53.19140625,
+          359.25
+        ]
+      ]
+    },
+    {
+      "title": "3 Motivating Study: Presence of Self-Occlusion \nin Egocentric Hand Tracking",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          53.7890625,
+          618.0
+        ],
+        [
+          292.5,
+          618.0
+        ],
+        [
+          292.5,
+          643.11328125
+        ],
+        [
+          53.7890625,
+          643.11328125
+        ]
+      ]
+    },
+    {
+      "title": "3.1 Measuring Self-Occlusion",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          316.16015625,
+          397.5
+        ],
+        [
+          469.5,
+          397.5
+        ],
+        [
+          469.5,
+          406.5
+        ],
+        [
+          316.16015625,
+          406.5
+        ]
+      ]
+    },
+    {
+      "title": "3.2 Occlusion Prevalence in Egocentric Data",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          54.38671875,
+          531.75
+        ],
+        [
+          278.25,
+          531.75
+        ],
+        [
+          278.25,
+          542.56640625
+        ],
+        [
+          54.38671875,
+          542.56640625
+        ]
+      ]
+    },
+    {
+      "title": "3.3 Impact of Occlusion on Egocentric Hand \nPose Estimators",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          318.55078125,
+          332.96484375
+        ],
+        [
+          543.0,
+          332.96484375
+        ],
+        [
+          543.0,
+          354.0
+        ],
+        [
+          318.55078125,
+          354.0
+        ]
+      ]
+    },
+    {
+      "title": "3.4 Our Proposal: Investigate Dorsal Features",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          53.7890625,
+          554.25
+        ],
+        [
+          283.5,
+          554.25
+        ],
+        [
+          283.5,
+          564.22265625
+        ],
+        [
+          53.7890625,
+          564.22265625
+        ]
+      ]
+    },
+    {
+      "title": "4 High-Resolution Dorsal Data Collection",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          316.16015625,
+          205.34765625
+        ],
+        [
+          532.5,
+          205.34765625
+        ],
+        [
+          532.5,
+          215.40234375
+        ],
+        [
+          316.16015625,
+          215.40234375
+        ]
+      ]
+    },
+    {
+      "title": "4.1 Participants and Procedure",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          317.25,
+          433.5
+        ],
+        [
+          477.75,
+          433.5
+        ],
+        [
+          477.75,
+          443.56640625
+        ],
+        [
+          317.25,
+          443.56640625
+        ]
+      ]
+    },
+    {
+      "title": "4.2 Data Cleaning",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          52.5,
+          336.75
+        ],
+        [
+          149.4140625,
+          336.75
+        ],
+        [
+          149.4140625,
+          346.88671875
+        ],
+        [
+          52.5,
+          346.88671875
+        ]
+      ]
+    },
+    {
+      "title": "5 Design and Implementation of DeltaDorsal",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          52.59375,
+          597.75
+        ],
+        [
+          283.5,
+          597.75
+        ],
+        [
+          283.5,
+          607.53515625
+        ],
+        [
+          52.59375,
+          607.53515625
+        ]
+      ]
+    },
+    {
+      "title": "5.1 Data Preprocessing",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          316.5,
+          350.75390625
+        ],
+        [
+          438.75,
+          350.75390625
+        ],
+        [
+          438.75,
+          360.80859375
+        ],
+        [
+          316.5,
+          360.80859375
+        ]
+      ]
+    },
+    {
+      "title": "5.2 Network Architecture",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          316.7578125,
+          651.62109375
+        ],
+        [
+          450.75,
+          651.62109375
+        ],
+        [
+          450.75,
+          660.75
+        ],
+        [
+          316.7578125,
+          660.75
+        ]
+      ]
+    },
+    {
+      "title": "5.3 Implementation Details",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          316.7578125,
+          370.5
+        ],
+        [
+          461.25,
+          370.5
+        ],
+        [
+          461.25,
+          382.46484375
+        ],
+        [
+          316.7578125,
+          382.46484375
+        ]
+      ]
+    },
+    {
+      "title": "6 Evaluation",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          316.458984375,
+          506.21484375
+        ],
+        [
+          388.5,
+          506.21484375
+        ],
+        [
+          388.5,
+          515.25
+        ],
+        [
+          316.458984375,
+          515.25
+        ]
+      ]
+    },
+    {
+      "title": "6.1 Pose Estimation Performance Study",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          316.5,
+          564.99609375
+        ],
+        [
+          520.5,
+          564.99609375
+        ],
+        [
+          520.5,
+          573.75
+        ],
+        [
+          316.5,
+          573.75
+        ]
+      ]
+    },
+    {
+      "title": "6.2 Ablation Study",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          52.59375,
+          629.96484375
+        ],
+        [
+          153.0,
+          629.96484375
+        ],
+        [
+          153.0,
+          639.75
+        ],
+        [
+          52.59375,
+          639.75
+        ]
+      ]
+    },
+    {
+      "title": "7 Sensing Tap, Pinch, and Click",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          52.59375,
+          329.09765625
+        ],
+        [
+          216.44175720214844,
+          329.09765625
+        ],
+        [
+          216.44175720214844,
+          340.3376770019531
+        ],
+        [
+          52.59375,
+          340.3376770019531
+        ]
+      ]
+    },
+    {
+      "title": "7.1 Self-Occluded Tap Detection",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          53.19140625,
+          444.3105773925781
+        ],
+        [
+          218.43814086914062,
+          444.3105773925781
+        ],
+        [
+          218.43814086914062,
+          455.21966552734375
+        ],
+        [
+          53.19140625,
+          455.21966552734375
+        ]
+      ]
+    },
+    {
+      "title": "7.2 Self-Occluded Pinch Detection",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          316.16015625,
+          351.9140625
+        ],
+        [
+          492.81695556640625,
+          351.9140625
+        ],
+        [
+          492.81695556640625,
+          364.50665283203125
+        ],
+        [
+          316.16015625,
+          364.50665283203125
+        ]
+      ]
+    },
+    {
+      "title": "7.3 Isometric Click Detection",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          317.056640625,
+          521.0225524902344
+        ],
+        [
+          469.340576171875,
+          521.0225524902344
+        ],
+        [
+          469.340576171875,
+          531.931640625
+        ],
+        [
+          317.056640625,
+          531.931640625
+        ]
+      ]
+    },
+    {
+      "title": "8 Discussion",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          317.056640625,
+          290.8856201171875
+        ],
+        [
+          387.7071228027344,
+          290.8856201171875
+        ],
+        [
+          387.7071228027344,
+          301.7946472167969
+        ],
+        [
+          317.056640625,
+          301.7946472167969
+        ]
+      ]
+    },
+    {
+      "title": "9 Conclusion",
+      "heading_level": null,
+      "page_id": 12,
+      "polygon": [
+        [
+          316.7578125,
+          431.96484375
+        ],
+        [
+          391.5,
+          431.96484375
+        ],
+        [
+          391.5,
+          441.75
+        ],
+        [
+          316.7578125,
+          441.75
+        ]
+      ]
+    },
+    {
+      "title": "References",
+      "heading_level": null,
+      "page_id": 13,
+      "polygon": [
+        [
+          52.892578125,
+          130.32421875
+        ],
+        [
+          108.14714050292969,
+          130.32421875
+        ],
+        [
+          108.14714050292969,
+          141.39666748046875
+        ],
+        [
+          52.892578125,
+          141.39666748046875
+        ]
+      ]
+    },
+    {
+      "title": "A Appendix",
+      "heading_level": null,
+      "page_id": 15,
+      "polygon": [
+        [
+          51.99609375,
+          155.07421875
+        ],
+        [
+          121.41197967529297,
+          155.07421875
+        ],
+        [
+          121.41197967529297,
+          166.53662109375
+        ],
+        [
+          51.99609375,
+          166.53662109375
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          901
+        ],
+        [
+          "Line",
+          85
+        ],
+        [
+          "Text",
+          14
+        ],
+        [
+          "SectionHeader",
+          9
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1933
+        ],
+        [
+          "Line",
+          111
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          113
+        ],
+        [
+          "Span",
+          44
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Reference",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          115
+        ],
+        [
+          "Span",
+          39
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          94
+        ],
+        [
+          "Span",
+          52
+        ],
+        [
+          "TableCell",
+          35
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "Reference",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          105
+        ],
+        [
+          "Span",
+          52
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          90
+        ],
+        [
+          "Span",
+          69
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Span",
+          95
+        ],
+        [
+          "Line",
+          87
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Reference",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Footnote",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "TableCell",
+          89
+        ],
+        [
+          "Line",
+          74
+        ],
+        [
+          "Span",
+          70
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1083
+        ],
+        [
+          "TableCell",
+          88
+        ],
+        [
+          "Line",
+          45
+        ],
+        [
+          "Caption",
+          4
+        ],
+        [
+          "Reference",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Table",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "TableGroup",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ],
+        [
+          "Text",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 10,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1819
+        ],
+        [
+          "Line",
+          91
+        ],
+        [
+          "TableCell",
+          60
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "Caption",
+          3
+        ],
+        [
+          "Table",
+          3
+        ],
+        [
+          "Reference",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "TableGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 11,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1661
+        ],
+        [
+          "Line",
+          84
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 12,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          126
+        ],
+        [
+          "Span",
+          39
+        ],
+        [
+          "Text",
+          13
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 13,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2853
+        ],
+        [
+          "Line",
+          153
+        ],
+        [
+          "ListItem",
+          31
+        ],
+        [
+          "Reference",
+          31
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Text",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 14,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2823
+        ],
+        [
+          "Line",
+          156
+        ],
+        [
+          "ListItem",
+          41
+        ],
+        [
+          "Reference",
+          40
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 15,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          491
+        ],
+        [
+          "TableCell",
+          84
+        ],
+        [
+          "Line",
+          33
+        ],
+        [
+          "Reference",
+          5
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListItem",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Text",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\DeltaDorsal Enhancing Hand Pose Estimation with Dorsal Features in Egocentric Views"
+}

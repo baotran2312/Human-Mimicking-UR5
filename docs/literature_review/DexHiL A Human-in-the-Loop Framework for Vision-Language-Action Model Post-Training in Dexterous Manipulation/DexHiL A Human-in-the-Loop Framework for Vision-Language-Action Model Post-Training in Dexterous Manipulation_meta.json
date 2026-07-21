@@ -1,0 +1,730 @@
+{
+  "table_of_contents": [
+    {
+      "title": "DexHiL: A Human-in-the-Loop Framework for Vision-Language-Action\nModel Post-Training in Dexterous Manipulation",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          68.1328125,
+          72.703125
+        ],
+        [
+          543.0711059570312,
+          72.703125
+        ],
+        [
+          543.0711059570312,
+          108.70733642578125
+        ],
+        [
+          68.1328125,
+          108.70733642578125
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          134.771484375,
+          450.52734375
+        ],
+        [
+          215.28225708007812,
+          450.52734375
+        ],
+        [
+          215.28225708007812,
+          463.23828125
+        ],
+        [
+          134.771484375,
+          463.23828125
+        ]
+      ]
+    },
+    {
+      "title": "II. RELATED WORK",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          132.75,
+          111.75
+        ],
+        [
+          219.0,
+          111.75
+        ],
+        [
+          219.0,
+          120.75
+        ],
+        [
+          132.75,
+          120.75
+        ]
+      ]
+    },
+    {
+      "title": "A. Dexterous Manipulation Data Collection System",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          50.80078125,
+          129.1640625
+        ],
+        [
+          265.5,
+          129.1640625
+        ],
+        [
+          265.5,
+          138.4453125
+        ],
+        [
+          50.80078125,
+          138.4453125
+        ]
+      ]
+    },
+    {
+      "title": "B. Vision Language Action model for dexterous manipula-",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          51.99609375,
+          381.69140625
+        ],
+        [
+          298.5,
+          381.69140625
+        ],
+        [
+          298.5,
+          401.02734375
+        ],
+        [
+          51.99609375,
+          401.02734375
+        ]
+      ]
+    },
+    {
+      "title": "C. Human-in-the-Loop Corrections for Robot Learning",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          52.5,
+          576.0
+        ],
+        [
+          281.25,
+          576.0
+        ],
+        [
+          281.25,
+          585.87890625
+        ],
+        [
+          52.5,
+          585.87890625
+        ]
+      ]
+    },
+    {
+      "title": "III. METHOD",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          405.0,
+          121.4296875
+        ],
+        [
+          465.0,
+          121.4296875
+        ],
+        [
+          465.0,
+          130.5
+        ],
+        [
+          405.0,
+          130.5
+        ]
+      ]
+    },
+    {
+      "title": "A. Interactive Human-in-the-Loop Teleoperation System for Dexterous Manipulation",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          311.25,
+          300.48046875
+        ],
+        [
+          558.75,
+          300.48046875
+        ],
+        [
+          558.75,
+          321.75
+        ],
+        [
+          311.25,
+          321.75
+        ]
+      ]
+    },
+    {
+      "title": "B. Human-in-the-Loop Post-training pipeline",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          311.25,
+          191.25
+        ],
+        [
+          498.0,
+          191.25
+        ],
+        [
+          498.0,
+          201.09375
+        ],
+        [
+          311.25,
+          201.09375
+        ]
+      ]
+    },
+    {
+      "title": "IV. EXPERIMENTS",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          129.09375,
+          54.140625
+        ],
+        [
+          222.328125,
+          54.140625
+        ],
+        [
+          222.328125,
+          64.44403076171875
+        ],
+        [
+          129.09375,
+          64.44403076171875
+        ]
+      ]
+    },
+    {
+      "title": "A. Experimental Setup",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          52.59375,
+          178.27734375
+        ],
+        [
+          146.8613739013672,
+          178.27734375
+        ],
+        [
+          146.8613739013672,
+          189.7886962890625
+        ],
+        [
+          52.59375,
+          189.7886962890625
+        ]
+      ]
+    },
+    {
+      "title": "B. Baselines and Evaluation Protocol",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          51.99609375,
+          610.5589904785156
+        ],
+        [
+          209.29698181152344,
+          610.5589904785156
+        ],
+        [
+          209.29698181152344,
+          620.5215911865234
+        ],
+        [
+          51.99609375,
+          620.5215911865234
+        ]
+      ]
+    },
+    {
+      "title": "C. Experiment Results",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          312.57421875,
+          636.15234375
+        ],
+        [
+          405.5134582519531,
+          636.15234375
+        ],
+        [
+          405.5134582519531,
+          646.1885070800781
+        ],
+        [
+          312.57421875,
+          646.1885070800781
+        ]
+      ]
+    },
+    {
+      "title": "V. CONCLUSION AND FUTURE WORK",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          81.87890625,
+          137.71649169921875
+        ],
+        [
+          270.2324523925781,
+          137.71649169921875
+        ],
+        [
+          270.2324523925781,
+          147.6790771484375
+        ],
+        [
+          81.87890625,
+          147.6790771484375
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          147.919921875,
+          335.0585632324219
+        ],
+        [
+          204.3016815185547,
+          335.0585632324219
+        ],
+        [
+          204.3016815185547,
+          345.02117919921875
+        ],
+        [
+          147.919921875,
+          345.02117919921875
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          175
+        ],
+        [
+          "Line",
+          73
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          255
+        ],
+        [
+          "Line",
+          109
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          124
+        ],
+        [
+          "Span",
+          50
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          6
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          124
+        ],
+        [
+          "Span",
+          93
+        ],
+        [
+          "Text",
+          14
+        ],
+        [
+          "Equation",
+          7
+        ],
+        [
+          "ListItem",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          447
+        ],
+        [
+          "Line",
+          91
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "Equation",
+          5
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          222
+        ],
+        [
+          "Line",
+          82
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          196
+        ],
+        [
+          "Line",
+          69
+        ],
+        [
+          "TableCell",
+          37
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Footnote",
+          2
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          429
+        ],
+        [
+          "Line",
+          138
+        ],
+        [
+          "ListItem",
+          30
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          53
+        ],
+        [
+          "Line",
+          17
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\DexHiL A Human-in-the-Loop Framework for Vision-Language-Action Model Post-Training in Dexterous Manipulation"
+}

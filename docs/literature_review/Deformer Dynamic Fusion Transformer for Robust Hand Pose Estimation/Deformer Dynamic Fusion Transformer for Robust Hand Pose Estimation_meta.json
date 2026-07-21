@@ -1,0 +1,868 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Deformer: Dynamic Fusion Transformer for Robust Hand Pose Estimation",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          66.9375,
+          105.9219970703125
+        ],
+        [
+          528.328125,
+          105.9219970703125
+        ],
+        [
+          528.328125,
+          120.2681884765625
+        ],
+        [
+          66.9375,
+          120.2681884765625
+        ]
+      ]
+    },
+    {
+      "title": "Abstract",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          144.333984375,
+          199.546875
+        ],
+        [
+          190.4802703857422,
+          199.546875
+        ],
+        [
+          190.4802703857422,
+          212.5743408203125
+        ],
+        [
+          144.333984375,
+          212.5743408203125
+        ]
+      ]
+    },
+    {
+      "title": "1. Introduction",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          50.111976623535156,
+          598.3948974609375
+        ],
+        [
+          126.94805145263672,
+          598.3948974609375
+        ],
+        [
+          126.94805145263672,
+          610.35009765625
+        ],
+        [
+          50.111976623535156,
+          610.35009765625
+        ]
+      ]
+    },
+    {
+      "title": "2. Related Work",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          307.79296875,
+          72.31640625
+        ],
+        [
+          391.9745178222656,
+          72.31640625
+        ],
+        [
+          391.9745178222656,
+          84.7421875
+        ],
+        [
+          307.79296875,
+          84.7421875
+        ]
+      ]
+    },
+    {
+      "title": "3. Method",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          307.5,
+          492.0
+        ],
+        [
+          361.5,
+          492.0
+        ],
+        [
+          361.5,
+          502.34765625
+        ],
+        [
+          307.5,
+          502.34765625
+        ]
+      ]
+    },
+    {
+      "title": "3.1. Deformer",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          48.0,
+          238.9921875
+        ],
+        [
+          116.25,
+          238.9921875
+        ],
+        [
+          116.25,
+          249.0
+        ],
+        [
+          48.0,
+          249.0
+        ]
+      ]
+    },
+    {
+      "title": "3.2. Optimization",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          307.5,
+          72.31640625
+        ],
+        [
+          390.26953125,
+          72.31640625
+        ],
+        [
+          390.26953125,
+          82.5
+        ],
+        [
+          307.5,
+          82.5
+        ]
+      ]
+    },
+    {
+      "title": "3.3. Implementation Details",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          48.111328125,
+          232.36590576171875
+        ],
+        [
+          179.17495727539062,
+          232.36590576171875
+        ],
+        [
+          179.17495727539062,
+          243.3248291015625
+        ],
+        [
+          48.111328125,
+          243.3248291015625
+        ]
+      ]
+    },
+    {
+      "title": "4. Experiments",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          48.708984375,
+          634.7030334472656
+        ],
+        [
+          127.15127563476562,
+          634.7030334472656
+        ],
+        [
+          127.15127563476562,
+          646.6582336425781
+        ],
+        [
+          48.708984375,
+          646.6582336425781
+        ]
+      ]
+    },
+    {
+      "title": "4.1. Dataset",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          306.896484375,
+          72.703125
+        ],
+        [
+          363.33868408203125,
+          72.703125
+        ],
+        [
+          363.33868408203125,
+          84.51055908203125
+        ],
+        [
+          306.896484375,
+          84.51055908203125
+        ]
+      ]
+    },
+    {
+      "title": "4.2. Evaluation Metric",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          308.689453125,
+          282.3046875
+        ],
+        [
+          413.4646301269531,
+          282.3046875
+        ],
+        [
+          413.4646301269531,
+          293.9957580566406
+        ],
+        [
+          308.689453125,
+          293.9957580566406
+        ]
+      ]
+    },
+    {
+      "title": "4.3. Results and Analysis",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          308.091796875,
+          540.24609375
+        ],
+        [
+          424.8619079589844,
+          540.24609375
+        ],
+        [
+          424.8619079589844,
+          551.3025512695312
+        ],
+        [
+          308.091796875,
+          551.3025512695312
+        ]
+      ]
+    },
+    {
+      "title": "4.4. Ablation Study",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          307.5,
+          515.25
+        ],
+        [
+          399.83203125,
+          515.25
+        ],
+        [
+          399.83203125,
+          524.25
+        ],
+        [
+          307.5,
+          524.25
+        ]
+      ]
+    },
+    {
+      "title": "5. Conclusion",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          308.8619689941406,
+          475.27734375
+        ],
+        [
+          378.615234375,
+          475.27734375
+        ],
+        [
+          378.615234375,
+          487.4961853027344
+        ],
+        [
+          308.8619689941406,
+          487.4961853027344
+        ]
+      ]
+    },
+    {
+      "title": "References",
+      "heading_level": null,
+      "page_id": 9,
+      "polygon": [
+        [
+          49.306640625,
+          72.31640625
+        ],
+        [
+          106.083984375,
+          72.31640625
+        ],
+        [
+          106.083984375,
+          84.7423095703125
+        ],
+        [
+          49.306640625,
+          84.7423095703125
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          144
+        ],
+        [
+          "Line",
+          69
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          240
+        ],
+        [
+          "Line",
+          104
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          89
+        ],
+        [
+          "Span",
+          36
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          119
+        ],
+        [
+          "Span",
+          90
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          93
+        ],
+        [
+          "Span",
+          44
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "Equation",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          44
+        ],
+        [
+          "Span",
+          31
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          328
+        ],
+        [
+          "Line",
+          111
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "SectionHeader",
+          5
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "TableCell",
+          148
+        ],
+        [
+          "Line",
+          62
+        ],
+        [
+          "Span",
+          21
+        ],
+        [
+          "Caption",
+          4
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Table",
+          3
+        ],
+        [
+          "TableGroup",
+          3
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          453
+        ],
+        [
+          "TableCell",
+          83
+        ],
+        [
+          "Line",
+          76
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Caption",
+          5
+        ],
+        [
+          "Picture",
+          5
+        ],
+        [
+          "Table",
+          3
+        ],
+        [
+          "TableGroup",
+          3
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          358
+        ],
+        [
+          "Line",
+          114
+        ],
+        [
+          "ListItem",
+          21
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 10,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          430
+        ],
+        [
+          "Line",
+          116
+        ],
+        [
+          "ListItem",
+          28
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 11,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          266
+        ],
+        [
+          "Line",
+          71
+        ],
+        [
+          "ListItem",
+          17
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\Deformer Dynamic Fusion Transformer for Robust Hand Pose Estimation"
+}
