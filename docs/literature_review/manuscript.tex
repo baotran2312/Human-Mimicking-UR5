@@ -1,4 +1,4 @@
-\documentclass[lettersize,journal]{IEEEtran}
+\documentclass[letterpaper,journal]{IEEEtran}
 \usepackage{amsmath,amsfonts}
 \usepackage{algorithmic}
 \usepackage{algorithm}
@@ -84,9 +84,16 @@ where $\tau_{filt}(t)$ is generated such that it is smooth, strictly bounded ($0
 
 Under delayed teleoperation, the task-space tracking error $e(t) \in \mathbb{R}^m$ is redefined relative to the filtered reference:
 \begin{equation}
-e(t) = \begin{bmatrix} e_p(t) \\ e_o(t) \\ e_f(t) \end{bmatrix} = \begin{bmatrix} p_{d}(t-\tau_{filt}(t)) - p_w(t) \\ \eta_d(t-\tau_{filt}(t))\epsilon(t) - \eta(t)\epsilon_d(t-\tau_{filt}(t)) - \epsilon^\times(t)\epsilon_d(t-\tau_{filt}(t)) \\ d_{d}(t-\tau_{filt}(t)) - d_f(t) \end{bmatrix}
+e(t) = \begin{bmatrix} e_p(t) \\ e_o(t) \\ e_f(t) \end{bmatrix}
 \end{equation}
-where $e_o(t) \in \mathbb{R}^3$ represents the quaternion-based orientation error, and $\epsilon^\times$ is the skew-symmetric matrix of $\epsilon$. By redefining the tracking error relative to the filtered reference, the physical jitter $n(t)$ is decoupled from the closed-loop differential kinematics, acting instead as a bounded spatial tracking offset (since $x_d$ is Lipschitz continuous and $n(t)$ is bounded by Assumption 3).
+where:
+\begin{align}
+e_p(t) &= p_{d}(t-\tau_{filt}(t)) - p_w(t), \\
+e_o(t) &= \eta_d(t-\tau_{filt}(t))\epsilon(t) - \eta(t)\epsilon_d(t-\tau_{filt}(t)) \nonumber \\
+&\quad - \epsilon^\times(t)\epsilon_d(t-\tau_{filt}(t)), \\
+e_f(t) &= d_{d}(t-\tau_{filt}(t)) - d_f(t),
+\end{align}
+and $e_o(t) \in \mathbb{R}^3$ represents the quaternion-based orientation error, with $\epsilon^\times$ being the skew-symmetric matrix of $\epsilon$. By redefining the tracking error relative to the filtered reference, the physical jitter $n(t)$ is decoupled from the closed-loop differential kinematics, acting instead as a bounded spatial tracking offset (since $x_d$ is Lipschitz continuous and $n(t)$ is bounded by Assumption 3).
 
 The primary control objective is to design a joint velocity controller $\dot{q}(t)$ that guarantees Input-to-State Stability (ISS) of the tracking error under Assumptions 1, 2, and 3, while utilizing the null-space to safely avoid joint limits, self-collisions, and unnatural hand configurations.
 
@@ -95,7 +102,11 @@ The primary control objective is to design a joint velocity controller $\dot{q}(
 \subsection{Singularity-Robust CLIK Control Law}
 To prevent numerical instability near kinematic singularities, we employ a Damped Least-Squares (DLS) Jacobian inverse. The proposed control law is formulated as:
 \begin{equation}
-\dot{q}(t) = J^{\dagger}_{DLS}(q(t)) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau_{filt}(t)) \right] + \left( I_n - J^{\dagger}_{DLS}(q(t))J(q(t)) \right) \dot{q}_0(t)
+\begin{split}
+\dot{q}(t) &= J^{\dagger}_{DLS}(q(t)) \Big[ v_{d,filt}(t) + K_p e(t) \\
+&\quad + K_d e(t - \tau_{filt}(t)) \Big] \\
+&\quad + \left( I_n - J^{\dagger}_{DLS}(q(t))J(q(t)) \right) \dot{q}_0(t)
+\end{split}
 \end{equation}
 where:
 \begin{itemize}
@@ -116,13 +127,22 @@ d_t(t) = d_s(t) + d_l(t)
 \end{equation}
 with:
 \begin{itemize}
-\item $d_s(t) = \left( J J^{\dagger}_{DLS} - I_m \right) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau_{filt}(t)) \right]$ being the damping perturbation.
+\item $d_s(t)$ being the damping perturbation defined as:
+\begin{equation*}
+\begin{split}
+d_s(t) &= \left( J J^{\dagger}_{DLS} - I_m \right) \Big[ v_{d,filt}(t) \\
+&\quad + K_p e(t) + K_d e(t - \tau_{filt}(t)) \Big]
+\end{split}
+\end{equation*}
 \item $d_l(t) = -J(q)\left( I_n - J^{\dagger}_{DLS}(q)J(q) \right)\dot{q}_0(t)$ being the workspace leakage originating from the DLS null-space projection.
 \end{itemize}
 
 To rigorously address the nonlinearities in $E(e_o)$, we define the linearization residual matrix mapping $\Delta E(e_o) = I_m - E(e_o)$. This allows the exact closed-loop error kinematics to be formulated as:
 \begin{equation}
-\dot{e}(t) = -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t) + \Delta E(e_o) \left[ K_p e(t) + K_d e(t - \tau_{filt}(t)) \right]
+\begin{split}
+\dot{e}(t) &= -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t) \\
+&\quad + \Delta E(e_o) \left[ K_p e(t) + K_d e(t - \tau_{filt}(t)) \right]
+\end{split}
 \end{equation}
 
 \textbf{Remark 1 (Local ISS)}: Within the region of attraction $\Omega_o = \{ e_o \in \mathbb{R}^3 \mid \eta_e > 0 \}$ (corresponding to rotation errors of less than $180^\circ$), the residual mapping $\Delta E(e_o) = I_m - E(e_o)$ converges to zero near the equilibrium state. By restricting the stability analysis to a local neighborhood where $\|\Delta E(e_o)\|$ is sufficiently small, its higher-order perturbative effects on the LKF derivative are strictly dominated by the negative-definite matrix $\Omega_{ISS}$. Thus, the established stability property is Local Input-to-State Stability (Local ISS).
@@ -130,13 +150,21 @@ To rigorously address the nonlinearities in $E(e_o)$, we define the linearizatio
 \subsection{Stability Analysis via Lyapunov-Krasovskii Functional}
 To prove the Local ISS of the closed-loop error system, we construct the following candidate Lyapunov-Krasovskii Functional (LKF) $V(t)$:
 \begin{equation}
-V(t) = e^T(t) P e(t) + \int_{t - \tau_{filt}(t)}^{t} e^T(s) Q e(s) ds + \tau_m \int_{-\tau_m}^{0} \int_{t + \theta}^{t} \dot{e}^T(s) R \dot{e}(s) ds d\theta
+\begin{split}
+V(t) &= e^T(t) P e(t) + \int_{t - \tau_{filt}(t)}^{t} e^T(s) Q e(s) ds \\
+&\quad + \tau_m \int_{-\tau_m}^{0} \int_{t + \theta}^{t} \dot{e}^T(s) R \dot{e}(s) ds d\theta
+\end{split}
 \end{equation}
 where $P, Q, R \in \mathbb{R}^{m \times m}$ are diagonal positive-definite matrices (hence $P K_p = K_p P$, $P K_d = K_d P$).
 
 Differentiating $V(t)$ along the trajectory of the perturbed error dynamics yields:
 \begin{equation}
-\dot{V}(t) = 2 e^T(t) P \left[ -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t) \right] + e^T(t) Q e(t) - (1 - \dot{\tau}_{filt}(t)) e^T(t - \tau_{filt}(t)) Q e(t - \tau_{filt}(t)) + \tau_m^2 \dot{e}^T(t) R \dot{e}(t) - \tau_m \int_{t - \tau_m}^{t} \dot{e}^T(s) R \dot{e}(s) ds
+\begin{split}
+\dot{V}(t) &= 2 e^T(t) P \left[ -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t) \right] \\
+&\quad + e^T(t) Q e(t) - \tau_m \int_{t - \tau_m}^{t} \dot{e}^T(s) R \dot{e}(s) ds \\
+&\quad - (1 - \dot{\tau}_{filt}(t)) e^T(t - \tau_{filt}(t)) Q e(t - \tau_{filt}(t)) \\
+&\quad + \tau_m^2 \dot{e}^T(t) R \dot{e}(t)
+\end{split}
 \end{equation}
 
 Using Young's inequality, the bilinear perturbation term is bounded by:
@@ -174,15 +202,24 @@ where the ISS-gain parameter $\gamma$ is explicitly formulated as:
 \end{equation}
 and the $3m \times 3m$ matrix $\Omega_{ISS}$ is defined as:
 \begin{equation}
-\Omega_{ISS} = \begin{bmatrix} 2 P K_p - Q - \epsilon_1 I_m & P K_d & 0 \\ * & (1-d)Q & 0 \\ * & * & 0 \end{bmatrix} + \begin{bmatrix} R & S-R & -S \\ * & 2R-S-S^T & S-R \\ * & * & R \end{bmatrix} - \tau_m^2 (1 + \epsilon_2) \begin{bmatrix} K_p^T R K_p & K_p^T R K_d & 0 \\ * & K_d^T R K_d & 0 \\ * & * & 0 \end{bmatrix}
+\Omega_{ISS} = \Omega_1 + \Omega_2 - \Omega_3
 \end{equation}
+where:
+\begin{align*}
+\Omega_1 &= \begin{bmatrix} 2 P K_p - Q - \epsilon_1 I_m & P K_d & 0 \\ * & (1-d)Q & 0 \\ * & * & 0 \end{bmatrix}, \\
+\Omega_2 &= \begin{bmatrix} R & S-R & -S \\ * & 2R-S-S^T & S-R \\ * & * & R \end{bmatrix}, \\
+\Omega_3 &= \tau_m^2 (1 + \epsilon_2) \begin{bmatrix} K_p^T R K_p & K_p^T R K_d & 0 \\ * & K_d^T R K_d & 0 \\ * & * & 0 \end{bmatrix}.
+\end{align*}
 
 By solving the LMI $\Omega_{ISS} > 0$ under the constraint $\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0$, the derivative satisfies $\dot{V}(t) \le -\lambda_{min}(\Omega_{ISS}) \|\eta(t)\|^2 + \gamma \|d_t(t)\|^2$, proving the Local Input-to-State Stability (Local ISS) of the tracking error.
 
 \subsection{Null-Space Projection for Joint Limit, Collision, and Posture Avoidance}
 The secondary joint velocity vector $\dot{q}_0(t)$ is designed to push the robot joints away from physical boundaries, avoid self-collisions, and guide the redundant hand joints toward natural anthropomorphic configurations to resolve the $19 - 5 = 14$ DoFs under-constraint. We define the objective function $H(q) \in \mathbb{R}$ to be minimized:
 \begin{equation}
-H(q) = w_{lim} \sum_{i=1}^{n} \left( \frac{q_i - \bar{q}_i}{q_{i,max} - q_{i,min}} \right)^2 + H_{coll}(q) + w_{post} \sum_{j=7}^{25} \left( q_j - q_{j,nom} \right)^2
+\begin{split}
+H(q) &= w_{lim} \sum_{i=1}^{n} \left( \frac{q_i - \bar{q}_i}{q_{i,max} - q_{i,min}} \right)^2 + H_{coll}(q) \\
+&\quad + w_{post} \sum_{j=7}^{25} \left( q_j - q_{j,nom} \right)^2
+\end{split}
 \end{equation}
 where:
 \begin{itemize}
@@ -193,9 +230,16 @@ where:
 
 To prevent gradient explosion and chattering in discrete-time execution (100 Hz), the collision potential $H_{coll}(q)$ is active only within a finite influence distance $d_{influence} > 0$:
 \begin{equation}
-H_{coll}(q) = \sum_{a < b} \frac{\sigma}{2} \left( \frac{1}{d_{ab}(q)} - \frac{1}{d_{influence}} \right)^2 \quad \text{if } d_{ab}(q) \le d_{influence}, \text{ else } 0
+H_{coll}(q) = \sum_{a < b} h_{ab}(q)
 \end{equation}
-where $d_{ab}(q)$ is the distance between capsule representations of link $a$ and link $b$. 
+where:
+\begin{equation*}
+h_{ab}(q) = \begin{cases}
+\frac{\sigma}{2} \left( \frac{1}{d_{ab}(q)} - \frac{1}{d_{influence}} \right)^2, & \text{if } d_{ab}(q) \le d_{influence} \\
+0, & \text{if } d_{ab}(q) > d_{influence}
+\end{cases}
+\end{equation*}
+and $d_{ab}(q)$ is the distance between capsule representations of link $a$ and link $b$.
 
 To ensure the perturbation vector $d_l(t)$ remains bounded in the LKF analysis, the gradient mapping is saturated to bound the norm of the potential vector:
 \begin{equation}
