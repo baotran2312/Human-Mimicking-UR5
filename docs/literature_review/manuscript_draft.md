@@ -1,6 +1,6 @@
-# Manuscript Draft: Problem Formulation & Proposed Scheme (Revised - Ver 6)
+# Manuscript Draft: Problem Formulation & Proposed Scheme (Revised - Ver 7)
 
-This document contains the finalized draft of the **Problem Formulation** and **Proposed Scheme** sections, resolving the non-differentiability paradox of packet jitter by transitioning the tracking target to a filtered reference trajectory.
+This document contains the finalized draft of the **Problem Formulation** and **Proposed Scheme** sections, incorporating the Local ISS (LISS) linearization residual, theoretical LPF parameters bounds, and real-time proximity hashing optimization.
 
 ---
 
@@ -61,13 +61,15 @@ $$d_t(t) = d_s(t) + d_l(t)$$
 *   $d_s(t) = \left( J J^{\dagger}_{DLS} - I_m \right) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau_{filt}(t)) \right]$ is the damping perturbation.
 *   $d_l(t) = -J(q)\left( I_n - J^{\dagger}_{DLS}(q)J(q) \right)\dot{q}_0(t)$ is the workspace leakage originating from the DLS null-space projection.
 
-**Remark 1 (Region of Attraction)**: Under local representation of orientation error, the region of attraction is defined as $\Omega_o = \{ e_o \in \mathbb{R}^3 \mid \eta_e > 0 \}$, corresponding to rotation errors of less than $180^\circ$. Within this domain, $E(e_o)$ is non-singular and converges to $I_m$ near the equilibrium state ($\eta_e \to 1, \epsilon_e \to 0$). Under this local linearization, the error dynamics simplify to:
-$$\dot{e}(t) \approx -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t)$$
+To rigorously address the nonlinearities in $E(e_o)$, we define the linearization residual matrix mapping $\Delta E(e_o) = I_m - E(e_o)$. This allows the exact closed-loop error kinematics to be formulated as:
+$$\dot{e}(t) = -K_p e(t) - K_d e(t - \tau_{filt}(t)) + d_t(t) + \Delta E(e_o) \left[ K_p e(t) + K_d e(t - \tau_{filt}(t)) \right]$$
+
+**Remark 1 (Local ISS)**: Within the region of attraction $\Omega_o = \{ e_o \in \mathbb{R}^3 \mid \eta_e > 0 \}$ (corresponding to rotation errors of less than $180^\circ$), the residual mapping $\Delta E(e_o) = I_m - E(e_o)$ converges to zero near the equilibrium state. By restricting the stability analysis to a local neighborhood where $\|\Delta E(e_o)\|$ is sufficiently small, its higher-order perturbative effects on the LKF derivative are strictly dominated by the negative-definite matrix $\Omega_{ISS}$. Thus, the established stability property is **Local Input-to-State Stability (Local ISS)**.
 
 ---
 
 ## B. Stability Analysis via Lyapunov-Krasovskii Functional
-To prove the Input-to-State Stability (ISS) of the closed-loop error system, we construct the following candidate Lyapunov-Krasovskii Functional (LKF) $V(t)$:
+To prove the Local ISS of the closed-loop error system, we construct the following candidate Lyapunov-Krasovskii Functional (LKF) $V(t)$:
 $$V(t) = e^T(t) P e(t) + \int_{t - \tau_{filt}(t)}^{t} e^T(s) Q e(s) ds + \tau_m \int_{-\tau_m}^{0} \int_{t + \theta}^{t} \dot{e}^T(s) R \dot{e}(s) ds d\theta$$
 where $P, Q, R \in \mathbb{R}^{m \times m}$ are diagonal positive-definite matrices (hence $P K_p = K_p P$, $P K_d = K_d P$).
 
@@ -96,7 +98,7 @@ $$\gamma = \frac{1}{\epsilon_1}\lambda_{max}(P^2) + \tau_m^2 \left( 1 + \frac{1}
 and the $3m \times 3m$ matrix $\Omega_{ISS}$ is defined as:
 $$\Omega_{ISS} = \begin{bmatrix} 2 P K_p - Q - \epsilon_1 I_m & P K_d & 0 \\ * & (1-d)Q & 0 \\ * & * & 0 \end{bmatrix} + \begin{bmatrix} R & S-R & -S \\ * & 2R-S-S^T & S-R \\ * & * & R \end{bmatrix} - \tau_m^2 (1 + \epsilon_2) \begin{bmatrix} K_p^T R K_p & K_p^T R K_d & 0 \\ * & K_d^T R K_d & 0 \\ * & * & 0 \end{bmatrix}$$
 
-By solving the LMI $\Omega_{ISS} > 0$ under the constraint $\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0$, the derivative satisfies $\dot{V}(t) \le -\lambda_{min}(\Omega_{ISS}) \|\eta(t)\|^2 + \gamma \|d_t(t)\|^2$, proving the Input-to-State Stability (ISS) of the tracking error.
+By solving the LMI $\Omega_{ISS} > 0$ under the constraint $\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0$, the derivative satisfies $\dot{V}(t) \le -\lambda_{min}(\Omega_{ISS}) \|\eta(t)\|^2 + \gamma \|d_t(t)\|^2$, proving the Local Input-to-State Stability (Local ISS) of the tracking error.
 
 ---
 
@@ -125,4 +127,10 @@ In practice, the delay $\tau(t)$ is calculated in real-time using network packet
 
 To resolve this issue, the controller implements a continuous-time Low-Pass Filter (LPF):
 $$\tau_{filt}(s) = \frac{1}{T_f s + 1} \tau(s)$$
-where the filter time constant $T_f > 0$ is tuned empirically during teleoperation trials such that the filtered derivative satisfies $|\dot{\tau}_{filt}(t)| \le d < 1$. This CLIK controller operates as a high-frequency (100 Hz) teleoperation bridge in the Isaac Sim simulator, allowing the human operator to generate stable, chatter-free demonstration data for downstream Diffusion Policy training.
+To strictly guarantee Assumption 2 ($|\dot{\tau}_{filt}(t)| \le d$), the filter time constant $T_f$ cannot be chosen arbitrarily. Given the LPF time-domain dynamics $\dot{\tau}_{filt} = \frac{1}{T_f} (\tau - \tau_{filt})$ and the bounded jitter $\|n(t)\| \le n_{max}$ from Assumption 3, $T_f$ must be selected such that:
+$$T_f \ge \frac{\max |\tau(t) - \tau_{filt}(t)|}{d}$$
+In practical implementation, $T_f$ is conservatively tuned above this theoretical lower bound to ensure smooth command velocities.
+
+Furthermore, computing the collision gradient $\nabla H_{coll}(q)$ requires the real-time calculation of the closest-point Jacobians $J_{ab}(q)$ for all active capsule pairs:
+$$\frac{\partial d_{ab}(q)}{\partial q} = \hat{n}_{ab}^T J_{ab}(q)$$
+where $\hat{n}_{ab}$ is the unit normal vector between the closest points. To ensure execution at 100 Hz, spatial hashing or bounding-volume hierarchy (BVH) algorithms provided by the Isaac Sim API are utilized to quickly cull inactive collision pairs ($d_{ab} > d_{influence}$), isolating the Jacobian computations only to the active proximity sets. This CLIK controller operates as a high-frequency (100 Hz) teleoperation bridge in the Isaac Sim simulator, allowing the human operator to generate stable, chatter-free demonstration data for downstream Diffusion Policy training.
