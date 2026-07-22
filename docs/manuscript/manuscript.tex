@@ -42,9 +42,9 @@ Despite these vision advancements, deploying such systems in remote, network-cou
 
 To address these limitations, this paper proposes a delay-robust and singularity-robust CLIK control scheme. The primary contributions of this work are three-fold:
 \begin{itemize}
-\item We formulate a true-and-noise delay model that isolates non-differentiable network jitter into a bounded spatial tracking offset, enabling smooth tracking using a filtered delay reference.
-\item We prove local Input-to-State Stability (LISS) of the tracking error under time-varying delays using a Lyapunov-Krasovskii Functional (LKF) and Linear Matrix Inequalities (LMIs) derived via the reciprocal convexity lemma.
-\item We integrate a Damped Least-Squares (DLS) Jacobian inverse with secondary null-space projection tasks to systematically handle kinematic singularities, joint limits, self-collisions, and human-like hand postures.
+\item Formulate a true-and-noise delay model that isolates non-differentiable network jitter into a bounded spatial tracking offset, enabling smooth tracking using a filtered delay reference.
+\item Prove local Input-to-State Stability (LISS) of the tracking error under time-varying delays using a Lyapunov-Krasovskii Functional (LKF) and Linear Matrix Inequalities (LMIs) derived via the reciprocal convexity lemma.
+\item Integrate a Damped Least-Squares (DLS) Jacobian inverse with secondary null-space projection tasks to systematically handle kinematic singularities, joint limits, self-collisions, and human-like hand postures.
 \end{itemize}
 
 \section{Related Work}
@@ -60,15 +60,22 @@ A State-of-the-Art (SOTA) comparison of the proposed scheme against other repres
 \centering
 \caption{State-of-the-Art (SOTA) Comparison of Robotic Teleoperation Controllers}
 \label{tab:sota}
-\begin{tabular}{|l|c|c|c|c|c|}
+\begin{tabular}{|l|l|c|l|l|l|}
 \hline
 \textbf{Framework} & \textbf{Target System} & \textbf{DoF} & \textbf{Delay Handling} & \textbf{Stability Analysis} & \textbf{Secondary Constraints} \\
 \hline
-Li \textit{et al.} \cite{ref_cybernetics_armhand} & Arm-Hand System & High (25 DoF) & No Delay & No Stability Proof & Joint Limits Only \\
-AnyTeleop \cite{ref_anyteleop} & Unified Arm-Hand & High (26 DoF) & No Delay & Kinematic Heuristics Only & Joint Limits \& Collision \\
-Jing \textit{et al.} \cite{ref_tase_tele} & Bilateral Manipulator & Low (2 DoF) & Time-Varying Delay & Lyapunov Stability & None \\
-Bertino \textit{et al.} \cite{ref_tcst_delay} & 7-DoF Manipulator & Low (7 DoF) & Constant Input Delay & Delay-Adaptive Lyapunov & Heuristic Limits \\
-\textbf{Proposed Scheme} & \textbf{Unified Arm-Hand} & \textbf{High (25 DoF)} & \textbf{Time-Varying + Jitter} & \textbf{LKF-LMI Rigorous LISS} & \textbf{Limits, Collision \& Synergy} \\
+Li \textit{et al.} (2022) \cite{ref_cybernetics_armhand} & Arm-Hand System & 25 & None & None & Joint limits only \\
+AnyTeleop (2023) \cite{ref_anyteleop} & Unified Arm-Hand & 26 & None & Kinematic heuristics only & Joint limits and collisions \\
+Jing \textit{et al.} (2024) \cite{ref_tase_tele} & Bilateral Manipulator & 2 & Time-Varying & Lyapunov stability & None \\
+Bertino \textit{et al.} (2022) \cite{ref_tcst_delay} & Robot Manipulator & 7 & Constant Input Delay & Delay-Adaptive Lyapunov & Heuristic joint limits \\
+Zhang \textit{et al.} (2021) \cite{ref_tcyb_nn} & Bilateral Manipulator & 2 & Time-Varying & Neural Network Fixed-Time & None \\
+Zheng \textit{et al.} (2025) \cite{ref_tmech_manip} & Robot Manipulator & 6 & Constant Input Delay & Constrained Finite-Time & Input \& joint constraints \\
+Li \textit{et al.} (2025) \cite{ref_tcyb_event} & Master-Slave System & 3 & Time-Varying & Event-Triggered Lyapunov & None \\
+Kastritsi \textit{et al.} (2024) \cite{ref_tro_rcm} & Surgical Robot & 6 & Time-Varying & Passive Bilateral Control & RCM and spatial constraints \\
+Guo \textit{et al.} (2025) \cite{ref_tro_grasp} & Multi-Fingered Hand & 19 & None & Reinforcement learning heuristic & Posture synergy only \\
+Chicaiza \textit{et al.} (2025) \cite{ref_access_dual} & Dual-Arm Mobilipator & 12 & Time-Varying & Coupled Rate-Position mapping & None \\
+Gutierrez-Giles (2023) \cite{ref_tcst_delayed_force} & Bilateral Teleoperation & 3 & Time-Varying & Passive force coordination & None \\
+\textbf{Proposed Scheme} & \textbf{Unified Arm-Hand} & \textbf{25} & \textbf{Time-Varying + Jitter} & \textbf{LKF-LMI Rigorous LISS} & \textbf{Limits, self-collision \& synergy} \\
 \hline
 \end{tabular}
 \end{table*}
