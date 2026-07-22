@@ -17,9 +17,10 @@
 \title{Delay-Robust Closed-Loop Inverse Kinematics Control for Unified 25-DoF Arm-Hand Dexterous Teleoperation Systems}
 
 \author{Thien Bao Tran, The Tri Bui, Huu Tran Nhat Le, and Ha Quang Thinh Ngo
-\thanks{Thien Bao Tran, The Tri Bui, and Huu Tran Nhat Le are with the Ho Chi Minh City University of Technology (HCMUT), 268 Ly Thuong Kiet, Dien Hong Ward, Ho Chi Minh City, Vietnam, and also with Vietnam National University-Ho Chi Minh City (VNU-HCM), Linh Xuan Ward, Ho Chi Minh City, Vietnam (e-mail: thien.tran@hcmut.edu.vn).}%
-\thanks{Ha Quang Thinh Ngo is with FPT University, Ho Chi Minh City, Vietnam. E-mail: thinhnhq@fe.edu.vn}%
-\thanks{Manuscript received July 21, 2026; revised July 21, 2026. Corresponding author: Ha Quang Thinh Ngo.}}
+\thanks{Ha Quang Thinh Ngo is with the FPT University, Ho Chi Minh City, Vietnam (corresponding author, phone: +84-961-382007; e-mail: thinhnhq2@fe.edu.vn).}%
+\thanks{Thien Bao Tran is with the Ho Chi Minh City University of Technology (HCMUT), 268 Ly Thuong Kiet, Dien Hong Ward, Ho Chi Minh City, Vietnam (e-mail: bao.tran2312sdh@hcmut.edu.vn).}%
+\thanks{The Tri Bui is with the Ho Chi Minh City University of Technology (HCMUT), 268 Ly Thuong Kiet, Dien Hong Ward, Ho Chi Minh City, Vietnam (e-mail: bttri.sdh231@hcmut.edu.vn).}%
+\thanks{Huu Tran Nhat Le is with the Ho Chi Minh City University of Technology (HCMUT), 268 Ly Thuong Kiet, Dien Hong Ward, Ho Chi Minh City, Vietnam (e-mail: lhtnhat.sdh232@hcmut.edu.vn).}}
 
 \markboth{IEEE Transactions on Robotics,~Vol.~22, No.~7, July~2026}%
 {Tran \MakeLowercase{\textit{et al.}}: Delay-Robust Closed-Loop Inverse Kinematics Control for Unified 25-DoF Arm-Hand Systems}
@@ -35,10 +36,42 @@ Closed-Loop Inverse Kinematics, Lyapunov-Krasovskii Functional, Input-to-State S
 \end{IEEEkeywords}
 
 \section{Introduction}
-\IEEEPARstart{V}{ision-based} teleoperation systems enable human operators to control high-DoF robotic manipulators in real-time. However, time-varying communication latencies and packet jitter often compromise the closed-loop tracking performance. This paper proposes a unified CLIK framework to guarantee stability and collision avoidance under variable delay.
+\IEEEPARstart{V}{ision-based} teleoperation systems have emerged as a cornerstone for enabling human operators to perform complex tasks using highly dexterous robotic arm-hand platforms. Recently, the robotics community has seen a paradigm shift toward learning-based visuomotor policies, such as the 3D Diffusion Policy \cite{ref_diffpolicy3d} and 3D Flow Diffusion Policy \cite{ref_flowdiff}, which demand large volumes of high-fidelity, smooth, and collision-free human demonstrations. Standard frameworks like AnyTeleop \cite{ref_anyteleop} and DexSim2Real \cite{ref_dexsim2real} utilize markerless vision-based tracking pipelines, leveraging egocentric or multi-camera hand pose estimation \cite{ref_egocentric3d, ref_deltadorsal, ref_egohand_bench} and advanced deep networks such as A2J-Transformers \cite{ref_a2j_trans} and Deformer \cite{ref_deformer} to track human hand keypoints without wearable gloves. 
+
+Despite these vision advancements, deploying such systems in remote, network-coupled environments introduces significant challenges. Data transmission over wireless channels (Wi-Fi, 4G/5G, or internet connections) inevitably suffers from time-varying communication latencies, packet dropouts, and non-differentiable network jitter \cite{ref_tase_tele, ref_tcyb_nn, ref_tmech_manip, ref_tcst_delay}. From a control theory perspective, packet jitter creates high-frequency non-differentiable delay trajectories, rendering standard Closed-Loop Inverse Kinematics (CLIK) velocity feedforward terms mathematically undefined. Furthermore, the 25-DoF unified arm-hand chain (comprising a 6-DoF UR5 manipulator and a 19-DoF custom multi-fingered hand) is highly redundant and prone to kinematic singularities, joint limit violations, and self-collisions.
+
+To address these limitations, this paper proposes a delay-robust and singularity-robust CLIK control scheme. The primary contributions of this work are three-fold:
+\begin{itemize}
+\item We formulate a true-and-noise delay model that isolates non-differentiable network jitter into a bounded spatial tracking offset, enabling smooth tracking using a filtered delay reference.
+\item We prove local Input-to-State Stability (LISS) of the tracking error under time-varying delays using a Lyapunov-Krasovskii Functional (LKF) and Linear Matrix Inequalities (LMIs) derived via the reciprocal convexity lemma.
+\item We integrate a Damped Least-Squares (DLS) Jacobian inverse with secondary null-space projection tasks to systematically handle kinematic singularities, joint limits, self-collisions, and human-like hand postures.
+\end{itemize}
 
 \section{Related Work}
-Existing time-delay teleoperation algorithms often neglect the kinematic singularities and highly redundant joint configurations of integrated arm-hand systems. We bridge this gap by formulating a 25-DoF unified Jacobian with LMI-based stability constraints.
+\subsection{Dexterous Hand-Arm Retargeting and Control}
+Mapping human hand-arm motion to high-DoF robotic platforms requires solving complex joint retargeting and collision avoidance problems \cite{ref_cybernetics_armhand, ref_xin_retarget}. Many research efforts focus on optimization-based retargeting to transfer finger joint angles from human hands to robotic counterparts \cite{ref_tro_grasp, ref_dexhil, ref_zero_shot_dex}. However, integrating 19-DoF hands with a 6-DoF arm adds significant redundancy, requiring null-space projection techniques to maintain natural anthropomorphic posture configurations \cite{ref_amp}. Singularity handling is also critical; standard pseudoinverses suffer from joint velocity explosion near singular configurations, prompting the use of Damped Least-Squares (DLS) algorithms \cite{ref_neuro_imped}.
+
+\subsection{Bilateral Teleoperation and Delayed Robot Control}
+Time-delay compensation is a classical problem in bilateral teleoperation systems. Various methodologies have been developed to guarantee closed-loop stability, including sliding mode control \cite{ref_iecon_sliding}, neural network-based adaptive control \cite{ref_tcyb_nn, ref_ojies_coor, ref_tsmc_nn}, predictor-based schemes \cite{ref_access_pred}, and event-triggered communication protocols \cite{ref_tcyb_event, ref_cac_event}. To analyze the stability of delayed systems, Lyapunov-Krasovskii Functional (LKF) techniques combined with LMI constraints are widely used \cite{ref_tcs_haptic, ref_tsmc_linear, ref_tcyb_piece, ref_ijsr_tele, ref_tcst_delayed_force, ref_tro_rcm}. However, most delayed control methods are limited to 6-DoF or 7-DoF manipulators, and do not scale to unified 25-DoF arm-hand systems. 
+
+A State-of-the-Art (SOTA) comparison of the proposed scheme against other representative teleoperation control frameworks is provided in Table \ref{tab:sota}.
+
+\begin{table*}[t]
+\centering
+\caption{State-of-the-Art (SOTA) Comparison of Robotic Teleoperation Controllers}
+\label{tab:sota}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Framework} & \textbf{Target System} & \textbf{DoF} & \textbf{Delay Handling} & \textbf{Stability Analysis} & \textbf{Secondary Constraints} \\
+\hline
+Li \textit{et al.} \cite{ref_cybernetics_armhand} & Arm-Hand System & High (25 DoF) & No Delay & No Stability Proof & Joint Limits Only \\
+AnyTeleop \cite{ref_anyteleop} & Unified Arm-Hand & High (26 DoF) & No Delay & Kinematic Heuristics Only & Joint Limits \& Collision \\
+Jing \textit{et al.} \cite{ref_tase_tele} & Bilateral Manipulator & Low (2 DoF) & Time-Varying Delay & Lyapunov Stability & None \\
+Bertino \textit{et al.} \cite{ref_tcst_delay} & 7-DoF Manipulator & Low (7 DoF) & Constant Input Delay & Delay-Adaptive Lyapunov & Heuristic Limits \\
+\textbf{Proposed Scheme} & \textbf{Unified Arm-Hand} & \textbf{High (25 DoF)} & \textbf{Time-Varying + Jitter} & \textbf{LKF-LMI Rigorous LISS} & \textbf{Limits, Collision \& Synergy} \\
+\hline
+\end{tabular}
+\end{table*}
 
 \section{Problem Formulation}
 
@@ -293,17 +326,73 @@ $$\dot{q}(t) = J^{\dagger}_{DLS} u_e(t) + \left( I_{25} - J^{\dagger}_{DLS} J \r
 \end{algorithmic}
 \end{algorithm}
 
-\begin{thebibliography}{1}
-\bibitem{ref1}
-Y. Qin, W. Yang, B. Huang, and X. Wang, ``AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System,'' in \textit{Proc. IEEE Int. Conf. Robot. Autom. (ICRA)}, 2023, pp. 10160--10166.
-\bibitem{ref2}
-J. Wang and L. Zhang, ``Event-Triggered Bilateral Teleoperation Control Under Time-Varying Communication Delays,'' \textit{IEEE Trans. Ind. Electron.}, vol. 69, no. 12, pp. 13245--13254, Dec. 2022.
-\bibitem{ref3}
-G. Palli, S. Salvatore, and C. Melchiorri, ``Bilateral Teleoperation of Asymmetric Robotic Systems with Time-Varying Delays,'' \textit{IEEE/ASME Trans. Mechatronics}, vol. 27, no. 4, pp. 2154--2165, Aug. 2022.
-\bibitem{ref4}
-X. Zhao, G. Zhang, and J. Wang, ``Event-triggered control and communication for single-master multi-slave teleoperation systems with Try-Once-Discard protocol,'' \textit{IEEE Trans. Autom. Control}, vol. 69, no. 3, pp. 1542--1549, Mar. 2024.
-\bibitem{ref5}
-H. B. Zhang, J. H. Park, and Y. Yoon, ``Novel Stability Criteria for Linear Time-Delay Systems Using Lyapunov-Krasovskii Functionals With A Cubic Polynomial on Time-Varying Delay,'' \textit{IEEE/CAA J. Autom. Sinica}, vol. 8, no. 5, pp. 1003--1011, May 2021.
+\begin{thebibliography}{33}
+\bibitem{ref_diffpolicy3d}
+Y. Ze, G. Zhang, K. Zhang, C. Hu, M. Wang, and H. Xu, ``3d diffusion policy: Generalizable visuomotor policy learning via simple 3d representations,'' \textit{arXiv preprint arXiv:2403.03954}, 2024.
+\bibitem{ref_flowdiff}
+S. Noh, D. Nam, K. Kim, G. Lee, Y. Yu, R. Kang, and K. Lee, ``3d flow diffusion policy: Visuomotor policy learning via generating flow in 3d space,'' \textit{arXiv preprint arXiv:2509.18676}, 2025.
+\bibitem{ref_egocentric3d}
+A. Prakash, R. Tu, M. Chang, and S. Gupta, ``3d hand pose estimation in everyday egocentric images,'' in \textit{Proc. Eur. Conf. Comput. Vis. (ECCV)}, 2024, pp. 183--202.
+\bibitem{ref_cybernetics_armhand}
+S. Li, N. Hendrich, H. Liang, P. Ruppel, C. Zhang, and J. Zhang, ``A dexterous hand-arm teleoperation system based on hand pose estimation and active vision,'' \textit{IEEE Trans. Cybernetics}, vol. 54, no. 3, pp. 1417--1428, Mar. 2022.
+\bibitem{ref_a2j_trans}
+C. Jiang, Y. Xiao, C. Wu, M. Zhang, J. Zheng, Z. Cao, and J. T. Zhou, ``A2j-transformer: Anchor-to-joint transformer network for 3d interacting hand pose estimation from a single rgb image,'' in \textit{Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)}, 2023, pp. 8846--8855.
+\bibitem{ref_amp}
+X. B. Peng, Z. Ma, P. Abbeel, S. Levine, and A. Kanazawa, ``Amp: Adversarial motion priors for stylized physics-based character control,'' \textit{ACM Trans. Graphics (ToG)}, vol. 40, no. 4, pp. 1--20, 2021.
+\bibitem{ref_xin_retarget}
+C. Xin, M. Yu, Y. Jiang, Z. Zhang, and X. Li, ``Analyzing Key Objectives in Human-to-Robot Retargeting for Dexterous Manipulation,'' \textit{IEEE Robotics and Automation Practice}, 2026.
+\bibitem{ref_anyteleop}
+Y. Qin, W. Yang, B. Huang, K. Van Wyk, H. Su, X. Wang, Y. Chao, D. Fox, and X. Wang, ``Anyteleop: A general vision-based dexterous robot arm-hand teleoperation system,'' \textit{arXiv preprint arXiv:2307.04577}, 2023.
+\bibitem{ref_egohand_bench}
+Z. Fan, T. Ohkawa, L. Yang, N. Lin, Z. Zhou, S. Zhou, and A. Yao, ``Benchmarks and challenges in pose estimation for egocentric hand interactions with objects,'' in \textit{Proc. Eur. Conf. Comput. Vis. (ECCV)}, 2024, pp. 428--448.
+\bibitem{ref_zero_shot_dex}
+Z. Zhao, Z. Li, Y. Ou, and M. Qi, ``Closing the reality gap: Zero-shot sim-to-real deployment for dexterous force-based grasping and manipulation,'' \textit{arXiv preprint arXiv:2607.04940}, 2026.
+\bibitem{ref_deformer}
+Q. Fu, X. Word, R. Xu, J. C. Niebles, and K. M. Kitani, ``Deformer: Dynamic fusion transformer for robust hand pose estimation,'' in \textit{Proc. IEEE/CVF Int. Conf. Comput. Vis. (ICCV)}, 2023, pp. 23600--23611.
+\bibitem{ref_deltadorsal}
+W. Huang, S. Pei, L. Zou, E. J. Gonzalez, I. Chatterjee, and Y. Zhang, ``DeltaDorsal: Enhancing Hand Pose Estimation with Dorsal Features in Egocentric Views,'' in \textit{Proc. CHI Conf. Human Factors Comput. Syst.}, 2026, pp. 1--16.
+\bibitem{ref_dexhil}
+Y. Han, Z. Chen, Y. Zhao, C. Xu, Y. Shao, Y. Peng, and W. Lian, ``DexHiL: A Human-in-the-Loop Framework for Vision-Language-Action Model Post-Training in Dexterous Manipulation,'' \textit{arXiv preprint arXiv:2603.09121}, 2026.
+\bibitem{ref_dexsim2real}
+Z. Zeng, F. Ding, H. Yang, X. Li, and Y. Liao, ``DexSim2Real: Foundation Model-Guided Sim-to-Real Transfer for Generalizable Dexterous Manipulation,'' \textit{arXiv preprint arXiv:2605.05241}, 2026.
+\bibitem{ref_tase_tele}
+B. Jing, J. Na, H. Duan, X. Wang, and Y. Huang, ``A USDE-based control for bilateral teleoperation systems with time-varying delays,'' \textit{IEEE Trans. Autom. Sci. Eng.}, vol. 22, pp. 407--417, 2024.
+\bibitem{ref_tcyb_nn}
+S. Zhang, S. Yuan, X. Yu, L. Kong, Q. Li, and G. Li, ``Adaptive neural network fixed-time control design for bilateral teleoperation with time delay,'' \textit{IEEE Trans. Cybernetics}, vol. 52, no. 9, pp. 9756--9769, Sep. 2021.
+\bibitem{ref_tmech_manip}
+S. Zheng, Y. Zha, C. K. Ahn, S. Lu, and B. Song, ``Constrained finite-time output regulation for robot manipulators with control input delay,'' \textit{IEEE/ASME Trans. Mechatronics}, vol. 30, no. 6, pp. 6654--6666, Dec. 2025.
+\bibitem{ref_tcst_delay}
+A. Bertino, P. Naseradinmousavi, and M. Krstic, ``Delay-adaptive control of a 7-DOF robot manipulator: Design and experiments,'' \textit{IEEE Trans. Control Syst. Technol.}, vol. 30, no. 6, pp. 2506--2521, Nov. 2022.
+\bibitem{ref_access_dual}
+F. A. Chicaiza, E. Slawinski, and V. Mut, ``Dual-arm mobile manipulator teleoperation with coupled rate-position mapping under time-varying delays,'' \textit{IEEE Access}, 2025.
+\bibitem{ref_neuro_imped}
+Z. Xu, X. Li, S. Li, H. Wu, and X. Zhou, ``Dynamic neural networks based adaptive optimal impedance control for redundant manipulators under physical constraints,'' \textit{Neurocomputing}, vol. 471, pp. 149--160, 2022.
+\bibitem{ref_tcyb_event}
+Y. Li, C. Li, K. Liu, J. Dong, and R. Johansson, ``Event-Triggered Control and Communication for Single-Master Multislave Teleoperation Systems With Try-Once-Discard Protocol,'' \textit{IEEE Trans. Cybernetics}, 2025.
+\bibitem{ref_cac_event}
+C. Li, Y. Li, J. Dong, and H. Wang, ``Event-triggered control of teleoperation systems with time-varying delays,'' in \textit{Proc. China Automation Congress (CAC)}, 2021, pp. 1537--1542.
+\bibitem{ref_tro_grasp}
+C. Guo, X. Chen, Z. Zeng, Z. Guo, Y. Li, H. Xiao, and H. Lu, ``Grasp like humans: Learning generalizable multi-fingered grasping from human proprioceptive sensorimotor integration,'' \textit{IEEE Trans. Robotics}, 2025.
+\bibitem{ref_ojies_coor}
+E. Slawinski, F. A. Chicaiza, F. G. Rossomando, V. Mut, and J. Moreno-Valenzuela, ``Lyapunov-stable Neural Network Control for Position and Force Coordination in Delayed Bilateral Teleoperation Systems,'' \textit{IEEE Open J. Ind. Electron. Soc.}, 2026.
+\bibitem{ref_tsmc_nn}
+W. M. Wang and Y. W. Wang, ``New Criteria on Stability Analysis of Generalized Neural Networks With Time-Varying Delays,'' \textit{IEEE Trans. Syst., Man, Cybern.: Systems}, 2025.
+\bibitem{ref_tro_rcm}
+T. Kastritsi, T. P. Semetzidis, and Z. Doulgeri, ``Passive bilateral surgical teleoperation with RCM and spatial constraints in the presence of time delays,'' \textit{IEEE Trans. Robotics}, vol. 41, pp. 612--627, 2024.
+\bibitem{ref_ijsr_tele}
+C. Wang, R. Luo, J. P. Whitney, and T. Padir, ``Practical approaches towards transparent and stable bilateral teleoperation under time-varying network delay,'' \textit{Int. J. Soc. Robotics}, vol. 17, no. 3, pp. 409--426, 2025.
+\bibitem{ref_access_pred}
+L. Chan, Y. Liu, Q. Huang, and P. Wang, ``Robust adaptive observer-based predictive control for a non-linear delayed bilateral teleoperation system,'' \textit{IEEE Access}, vol. 10, pp. 52294--52305, 2022.
+\bibitem{ref_iecon_sliding}
+S. Islam and A. Sunda-Meya, ``Robust sliding mode based finite-time bilateral shared teleoperation system with unsymmetrical time-varying delay,'' in \textit{Proc. IECON 48th Annu. Conf. IEEE Ind. Electron. Soc.}, 2022, pp. 1--6.
+\bibitem{ref_tcs_haptic}
+Y. Liu, D. Xiong, L. Wang, and C. K. Zhang, ``Stability analysis of haptic systems with time-varying delay via a delay-product-type Lyapunov–Krasovskii functional,'' \textit{IEEE Trans. Circuits Syst. II: Express Briefs}, vol. 69, no. 11, pp. 4339--4343, Nov. 2022.
+\bibitem{ref_tsmc_linear}
+C. R. Wang, Y. He, K. Z. Liu, and C. K. Zhang, ``Stability analysis of linear systems with a time-varying delay via less conservative methods,'' \textit{IEEE Trans. Syst., Man, Cybern.: Systems}, vol. 55, no. 3, pp. 1972--1983, 2024.
+\bibitem{ref_tcyb_piece}
+B. Kaviarasan, O. M. Kwon, M. J. Park, and R. Sakthivel, ``Stabilization of periodic piecewise time-varying systems with time-varying delay under multiple cyber attacks: An augmented Lyapunov functional approach,'' \textit{IEEE Trans. Cybernetics}, vol. 54, no. 8, pp. 4389--4401, Aug. 2023.
+\bibitem{ref_tcst_delayed_force}
+A. Gutierrez-Giles, A. Rodriguez-Angeles, P. Schleer, and M. A. Arteaga, ``Time-varying delayed bilateral teleoperation without force/velocity measurements,'' \textit{IEEE Trans. Control Syst. Technol.}, vol. 32, no. 3, pp. 780--792, May 2023.
 \end{thebibliography}
 
 \end{document}
