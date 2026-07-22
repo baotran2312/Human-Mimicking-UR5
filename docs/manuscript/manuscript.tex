@@ -28,7 +28,7 @@
 \maketitle
 
 \begin{abstract}
-This paper presents a delay-robust Closed-Loop Inverse Kinematics (CLIK) control scheme for a unified 25-DoF arm-hand robotic system (6-DoF UR5 manipulator and 19-DoF custom dexterous hand) under time-varying communication delays. By introducing a filtered reference trajectory and modeling latency under a true-and-noise framework, we prove Local Input-to-State Stability (LISS) using a Lyapunov-Krasovskii Functional (LKF) and Linear Matrix Inequalities (LMIs). A damped least-squares (DLS) Jacobian inverse is utilized to guarantee singularity-robust tracking, while secondary null-space projection optimizes joint limits, self-collision avoidance, and natural anthropomorphic postures. The effectiveness of the proposed method is validated at 100 Hz in a physical simulator.
+This paper presents a delay-robust Closed-Loop Inverse Kinematics (CLIK) control scheme for a unified 25-DoF arm-hand robotic system (6-DoF UR5 manipulator and 19-DoF custom dexterous hand) under time-varying communication delays. By introducing a filtered reference trajectory and modeling latency under a true-and-noise framework, we prove Local Input-to-State Stability (LISS) using a Lyapunov-Krasovskii Functional (LKF) and Linear Matrix Inequalities (LMIs). A damped least-squares (DLS) Jacobian inverse is utilized to guarantee singularity-robust tracking, while secondary null-space projection optimizes joint limits, self-collision avoidance, and natural anthropomorphic postures. The effectiveness of the proposed method is validated at 100 Hz in both physical simulattion and real-case experiment.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -79,6 +79,34 @@ Gutierrez-Giles (2023) \cite{ref_tcst_delayed_force} & Bilateral Teleoperation &
 \hline
 \end{tabular}
 \end{table*}
+
+\section{Preliminaries}
+In this section, we present several fundamental definitions and mathematical lemmas that are crucial for the stability analysis and control design in subsequent sections.
+
+Throughout this paper, for a symmetric matrix $P$, $P > 0$ (respectively, $P \ge 0$) denotes that $P$ is positive-definite (respectively, positive-semidefinite). The minimum and maximum eigenvalues of $P$ are represented by $\lambda_{min}(P)$ and $\lambda_{max}(P)$, respectively. The Euclidean norm of a vector $x \in \mathbb{R}^m$ is denoted by $\|x\| = \sqrt{x^T x}$.
+
+\textbf{Lemma 1 (Reciprocal Convexity Lemma \cite{ref_dexsim2real})}: Let $R \in \mathbb{R}^{m \times m}$ be a positive-definite symmetric matrix. If there exists a matrix $S \in \mathbb{R}^{m \times m}$ such that:
+\begin{equation}
+\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0
+\end{equation}
+then, for any scalar $\alpha \in (0, 1)$ and any vectors $x_1, x_2 \in \mathbb{R}^m$, the following inequality holds:
+\begin{equation}
+\frac{1}{\alpha} x_1^T R x_1 + \frac{1}{1-\alpha} x_2^T R x_2 \ge \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}^T \begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+\end{equation}
+
+\textbf{Lemma 2 (Fenchel's/Young's Inequality \cite{ref_deltadorsal})}: For any vectors $x, y \in \mathbb{R}^m$ and any symmetric positive-definite matrix $Q \in \mathbb{R}^{m \times m}$, the following inequality holds:
+\begin{equation}
+x^T y \le \frac{1}{2} x^T Q x + \frac{1}{2} y^T Q^{-1} y
+\end{equation}
+In particular, for any positive scalar $\epsilon > 0$, we have:
+\begin{equation}
+2 x^T y \le \epsilon x^T x + \frac{1}{\epsilon} y^T y
+\end{equation}
+
+\textbf{Lemma 3 (Jensen's Inequality \cite{ref_tcs_haptic})}: For any symmetric positive-definite matrix $R \in \mathbb{R}^{m \times m}$, a scalar $h > 0$, and a vector function $x: [t-h, t] \to \mathbb{R}^m$ such that the integration is well-defined, the following inequality holds:
+\begin{equation}
+-h \int_{t-h}^{t} \dot{x}^T(s) R \dot{x}(s) ds \le - [x(t) - x(t-h)]^T R [x(t) - x(t-h)]
+\end{equation}
 
 \section{Problem Formulation}
 
