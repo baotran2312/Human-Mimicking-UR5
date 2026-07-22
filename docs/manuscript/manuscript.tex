@@ -16,8 +16,10 @@
 
 \title{Delay-Robust Closed-Loop Inverse Kinematics Control for Unified 25-DoF Arm-Hand Dexterous Teleoperation Systems}
 
-\author{Thien-Bao Tran, and Bao-Tran Nguyen
-\thanks{Manuscript received July 21, 2026; revised July 21, 2026. This work was supported by Advanced Robotic Manipulation Lab.}}
+\author{Thien Bao Tran, The Tri Bui, Huu Tran Nhat Le, and Ha Quang Thinh Ngo
+\thanks{Thien Bao Tran, The Tri Bui, and Huu Tran Nhat Le are with the Ho Chi Minh City University of Technology (HCMUT), 268 Ly Thuong Kiet, Dien Hong Ward, Ho Chi Minh City, Vietnam, and also with Vietnam National University-Ho Chi Minh City (VNU-HCM), Linh Xuan Ward, Ho Chi Minh City, Vietnam (e-mail: thien.tran@hcmut.edu.vn).}%
+\thanks{Ha Quang Thinh Ngo is with FPT University, Ho Chi Minh City, Vietnam. E-mail: thinhnhq@fe.edu.vn}%
+\thanks{Manuscript received July 21, 2026; revised July 21, 2026. Corresponding author: Ha Quang Thinh Ngo.}}
 
 \markboth{IEEE Transactions on Robotics,~Vol.~22, No.~7, July~2026}%
 {Tran \MakeLowercase{\textit{et al.}}: Delay-Robust Closed-Loop Inverse Kinematics Control for Unified 25-DoF Arm-Hand Systems}
@@ -228,15 +230,15 @@ where:
 \item $w_{lim}$ and $w_{post}$ are positive weight parameters.
 \end{itemize}
 
-To prevent gradient explosion and chattering in discrete-time execution (100 Hz), the collision potential $H_{coll}(q)$ is active only within a finite influence distance $d_{influence} > 0$:
+To prevent gradient explosion and chattering in discrete-time execution (100 Hz), the collision potential $H_{coll}(q)$ is active only within a finite influence distance $d_{inf} > 0$:
 \begin{equation}
 H_{coll}(q) = \sum_{a < b} h_{ab}(q)
 \end{equation}
 where:
 \begin{equation*}
 h_{ab}(q) = \begin{cases}
-\frac{\sigma}{2} \left( \frac{1}{d_{ab}(q)} - \frac{1}{d_{influence}} \right)^2, & \text{if } d_{ab}(q) \le d_{influence} \\
-0, & \text{if } d_{ab}(q) > d_{influence}
+\frac{\sigma}{2} \left( \frac{1}{d_{ab}(q)} - \frac{1}{d_{inf}} \right)^2, & \text{if } d_{ab}(q) \le d_{inf} \\
+0, & \text{if } d_{ab}(q) > d_{inf}
 \end{cases}
 \end{equation*}
 and $d_{ab}(q)$ is the distance between capsule representations of link $a$ and link $b$.
@@ -266,7 +268,7 @@ Furthermore, computing the collision gradient $\nabla H_{coll}(q)$ requires the 
 \begin{equation}
 \frac{\partial d_{ab}(q)}{\partial q} = \hat{n}_{ab}^T J_{ab}(q)
 \end{equation}
-where $\hat{n}_{ab}$ is the unit normal vector between the closest points. To ensure execution at 100 Hz, spatial hashing or bounding-volume hierarchy (BVH) algorithms provided by the Isaac Sim API are utilized to quickly cull inactive collision pairs ($d_{ab} > d_{influence}$), isolating the Jacobian computations only to the active proximity sets. This CLIK controller operates as a high-frequency (100 Hz) teleoperation bridge in the Isaac Sim simulator, allowing the human operator to generate stable, chatter-free demonstration data for downstream Diffusion Policy training.
+where $\hat{n}_{ab}$ is the unit normal vector between the closest points. To ensure execution at 100 Hz, spatial hashing or bounding-volume hierarchy (BVH) algorithms provided by the Isaac Sim API are utilized to quickly cull inactive collision pairs ($d_{ab} > d_{inf}$), isolating the Jacobian computations only to the active proximity sets. This CLIK controller operates as a high-frequency (100 Hz) teleoperation bridge in the Isaac Sim simulator, allowing the human operator to generate stable, chatter-free demonstration data for downstream Diffusion Policy training.
 
 \begin{algorithm}[H]
 \caption{Singularity-Robust and Delay-Robust Unified CLIK Control}
@@ -275,23 +277,18 @@ where $\hat{n}_{ab}$ is the unit normal vector between the closest points. To en
 \REQUIRE Current joint configuration $q(t) \in \mathbb{R}^{25}$, raw communication delay $\tau(t)$, desired workspace trajectory $x_d(t) \in \mathcal{X}$, nominal synergy hand posture $q_{nom} \in \mathbb{R}^{19}$, LPF time constant $T_f$, gains $K_p, K_d, \alpha, \sigma$, damping $\lambda$.
 \ENSURE Command joint velocity vector $\dot{q}(t) \in \mathbb{R}^{25}$.
 \STATE Measure current packet latency $\tau(t) = t_{recv} - t_{send}$.
-\STATE Update filtered delay state $\tau_{filt}(t)$ via LPF:
-$$\dot{\tau}_{filt}(t) = \frac{1}{T_f} (\tau(t) - \tau_{filt}(t))$$
-\STATE Compute filtered reference trajectory:
-$$x_{d,filt}(t) = x_d(t - \tau_{filt}(t))$$
-\STATE Compute reference feedforward velocity:
-$$v_{d,filt}(t) = v_d(t - \tau_{filt}(t))(1 - \dot{\tau}_{filt}(t))$$
-\STATE Compute task-space tracking error $e(t) = [e_p^T(t), e_o^T(t), e_f^T(t)]^T$ using unit quaternion orientation error.
+\STATE Update filtered delay state $\dot{\tau}_{filt}(t) = \frac{1}{T_f} (\tau(t) - \tau_{filt}(t))$.
+\STATE Compute filtered reference trajectory $x_{d,filt}(t) = x_d(t - \tau_{filt}(t))$.
+\STATE Compute reference velocity $v_{d,filt}(t) = v_d(t - \tau_{filt}(t))(1 - \dot{\tau}_{filt}(t))$.
+\STATE Compute tracking error $e(t) = [e_p^T(t), e_o^T(t), e_f^T(t)]^T$ using unit quaternion for orientation.
 \STATE Compute analytical system Jacobian $J(q(t)) \in \mathbb{R}^{11 \times 25}$.
-\STATE Calculate Damped Least-Squares pseudo-inverse:
-$$J^{\dagger}_{DLS}(q(t)) = J^T(q(t))\left(J(q(t))J^T(q(t)) + \lambda^2 I_{11}\right)^{-1}$$
-\STATE Query spatial culling interface (BVH/Hashing) for active capsule pairs ($d_{ab} \le d_{influence}$).
-\STATE Compute gradient of secondary task $\nabla H(q(t))$ consisting of joint boundaries, capsule-based self-collisions, and posture synergy:
-$$\nabla H(q(t)) = \nabla H_{lim}(q(t)) + \nabla H_{coll}(q(t)) + \nabla H_{post}(q(t))$$
-\STATE Compute saturated null-space velocity:
-$$\dot{q}_0(t) = \text{sat}_{v_{max}} \left( -\alpha \nabla H(q(t)) \right)$$
+\STATE Calculate DLS pseudo-inverse $J^{\dagger}_{DLS} = J^T\left(J J^T + \lambda^2 I_{11}\right)^{-1}$.
+\STATE Query spatial culling interface (BVH/Hashing) for active capsule pairs ($d_{ab} \le d_{inf}$).
+\STATE Compute secondary gradient $\nabla H = \nabla H_{lim} + \nabla H_{coll} + \nabla H_{post}$.
+\STATE Compute saturated null-space velocity $\dot{q}_0(t) = \text{sat}_{v_{max}} \left( -\alpha \nabla H \right)$.
+\STATE Compute task space control input $u_e(t) = v_{d,filt} + K_p e(t) + K_d e(t - \tau_{filt})$.
 \STATE Calculate command joint velocity vector:
-$$\dot{q}(t) = J^{\dagger}_{DLS}(q(t)) \left[ v_{d,filt}(t) + K_p e(t) + K_d e(t - \tau_{filt}(t)) \right] + \left( I_{25} - J^{\dagger}_{DLS}(q(t))J(q(t)) \right) \dot{q}_0(t)$$
+$$\dot{q}(t) = J^{\dagger}_{DLS} u_e(t) + \left( I_{25} - J^{\dagger}_{DLS} J \right) \dot{q}_0(t)$$
 \RETURN $\dot{q}(t)$
 \end{algorithmic}
 \end{algorithm}
