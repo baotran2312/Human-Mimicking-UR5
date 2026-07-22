@@ -85,7 +85,7 @@ In this section, we present several fundamental definitions and mathematical lem
 
 Throughout this paper, for a symmetric matrix $P$, $P > 0$ (respectively, $P \ge 0$) denotes that $P$ is positive-definite (respectively, positive-semidefinite). The minimum and maximum eigenvalues of $P$ are represented by $\lambda_{min}(P)$ and $\lambda_{max}(P)$, respectively. The Euclidean norm of a vector $x \in \mathbb{R}^m$ is denoted by $\|x\| = \sqrt{x^T x}$.
 
-\textbf{Lemma 1 (Reciprocal Convexity Lemma \cite{ref_dexsim2real})}: Let $R \in \mathbb{R}^{m \times m}$ be a positive-definite symmetric matrix. If there exists a matrix $S \in \mathbb{R}^{m \times m}$ such that:
+\textbf{Lemma 1 (Reciprocal Convexity Lemma \cite{ref_park_reciprocal})}: Let $R \in \mathbb{R}^{m \times m}$ be a positive-definite symmetric matrix. If there exists a matrix $S \in \mathbb{R}^{m \times m}$ such that:
 \begin{equation}
 \begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0
 \end{equation}
@@ -94,7 +94,7 @@ then, for any scalar $\alpha \in (0, 1)$ and any vectors $x_1, x_2 \in \mathbb{R
 \frac{1}{\alpha} x_1^T R x_1 + \frac{1}{1-\alpha} x_2^T R x_2 \ge \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}^T \begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
 \end{equation}
 
-\textbf{Lemma 2 (Fenchel's/Young's Inequality \cite{ref_deltadorsal})}: For any vectors $x, y \in \mathbb{R}^m$ and any symmetric positive-definite matrix $Q \in \mathbb{R}^{m \times m}$, the following inequality holds:
+\textbf{Lemma 2 (Fenchel's/Young's Inequality \cite{ref_boyd_convex})}: For any vectors $x, y \in \mathbb{R}^m$ and any symmetric positive-definite matrix $Q \in \mathbb{R}^{m \times m}$, the following inequality holds:
 \begin{equation}
 x^T y \le \frac{1}{2} x^T Q x + \frac{1}{2} y^T Q^{-1} y
 \end{equation}
@@ -237,7 +237,7 @@ Differentiating $V(t)$ along the trajectory of the perturbed error dynamics yiel
 \end{split}
 \end{equation}
 
-Using Young's inequality, the bilinear perturbation term is bounded by:
+Using Lemma 2 (Young's Inequality), the bilinear perturbation term is bounded by:
 \begin{equation}
 2 e^T(t) P d_t(t) \le \epsilon_1 e^T(t) e(t) + \frac{1}{\epsilon_1} d_t^T(t) P^2 d_t(t)
 \end{equation}
@@ -247,13 +247,13 @@ Let $\phi_e(t) = -K_p e(t) - K_d e(t - \tau_{filt}(t))$. The acceleration-relate
 \begin{equation}
 \dot{e}^T(t) R \dot{e}(t) = \left[ \phi_e(t) + d_t(t) \right]^T R \left[ \phi_e(t) + d_t(t) \right]
 \end{equation}
-Applying Young's inequality to the cross-term $2 \phi_e^T(t) R d_t(t)$ yields:
+Applying Lemma 2 (Young's Inequality) to the cross-term $2 \phi_e^T(t) R d_t(t)$ yields:
 \begin{equation}
 \dot{e}^T(t) R \dot{e}(t) \le (1 + \epsilon_2) \phi_e^T(t) R \phi_e(t) + \left( 1 + \frac{1}{\epsilon_2} \right) d_t^T(t) R d_t(t)
 \end{equation}
 where $\epsilon_2 > 0$.
 
-To handle the delay-dependent integral term, we partition the integration interval into two segments: $[t - \tau_m, t - \tau_{filt}(t)]$ and $[t - \tau_{filt}(t), t]$. Applying Jensen's inequality to each segment yields:
+To handle the delay-dependent integral term, we partition the integration interval into two segments: $[t - \tau_m, t - \tau_{filt}(t)]$ and $[t - \tau_{filt}(t), t]$. Applying Lemma 3 (Jensen's Inequality) to each segment yields:
 \begin{equation}
 -\tau_m \int_{t - \tau_{filt}(t)}^{t} \dot{e}^T(s) R \dot{e}(s) ds \le -\frac{\tau_m}{\tau_{filt}(t)} a^T(t) R a(t)
 \end{equation}
@@ -262,7 +262,7 @@ To handle the delay-dependent integral term, we partition the integration interv
 \end{equation}
 where $a(t) = e(t) - e(t-\tau_{filt}(t))$ and $b(t) = e(t-\tau_{filt}(t)) - e(t-\tau_m)$.
 
-Let $\eta(t) = [e^T(t), e^T(t-\tau_{filt}(t)), e^T(t-\tau_m)]^T \in \mathbb{R}^{3m}$ be the augmented state vector. Applying the \textit{reciprocal convexity lemma} (Park et al., 2011), if there exists a matrix $S \in \mathbb{R}^{m \times m}$ such that $\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0$, the partitioned segments can be bounded. We obtain:
+Let $\eta(t) = [e^T(t), e^T(t-\tau_{filt}(t)), e^T(t-\tau_m)]^T \in \mathbb{R}^{3m}$ be the augmented state vector. Applying Lemma 1 (Reciprocal Convexity Lemma), if there exists a matrix $S \in \mathbb{R}^{m \times m}$ such that $\begin{bmatrix} R & S \\ S^T & R \end{bmatrix} \ge 0$, the partitioned segments can be bounded. We obtain:
 \begin{equation}
 \dot{V}(t) \le -\eta^T(t) \Omega_{ISS} \eta(t) + \gamma \|d_t(t)\|^2
 \end{equation}
@@ -428,6 +428,10 @@ C. R. Wang, Y. He, K. Z. Liu, and C. K. Zhang, ``Stability analysis of linear sy
 B. Kaviarasan, O. M. Kwon, M. J. Park, and R. Sakthivel, ``Stabilization of periodic piecewise time-varying systems with time-varying delay under multiple cyber attacks: An augmented Lyapunov functional approach,'' \textit{IEEE Trans. Cybernetics}, vol. 54, no. 8, pp. 4389--4401, Aug. 2023.
 \bibitem{ref_tcst_delayed_force}
 A. Gutierrez-Giles, A. Rodriguez-Angeles, P. Schleer, and M. A. Arteaga, ``Time-varying delayed bilateral teleoperation without force/velocity measurements,'' \textit{IEEE Trans. Control Syst. Technol.}, vol. 32, no. 3, pp. 780--792, May 2023.
+\bibitem{ref_boyd_convex}
+S. Boyd and L. Vandenberghe, \textit{Convex Optimization}. Cambridge University Press, 2004.
+\bibitem{ref_park_reciprocal}
+P. Park, J. W. Ko, and C. Jeong, ``Reciprocally convex approach to stability of systems with time-varying delays,'' \textit{Automatica}, vol. 47, no. 1, pp. 235--238, 2011.
 \end{thebibliography}
 
 \end{document}
