@@ -64,6 +64,7 @@ class HILSimulationScenario1:
         
         # Hộp lưu trữ gói tin thô nhận được từ Laptop
         self.packet_queue = deque()
+        self.packet_history = deque(maxlen=2000)
         self.running = True
         
         # Các thông số trễ mạng mô phỏng (Kịch bản 1)
@@ -174,6 +175,37 @@ class HILSimulationScenario1:
                     writer.writerow(["JVCI", round(jvci_std, 2), round(jvci_prop, 2), round(((jvci_std - jvci_prop)/jvci_std)*100, 1)])
             print(f"[INFO] Đã xuất file tổng hợp kết quả: {summary_file}")
 
+    def interpolate_target_position(self, target_time):
+        """Tìm vị trí mục tiêu bằng cách nội suy tuyến tính trong lịch sử thời gian phát từ Laptop"""
+        if not self.packet_history:
+            return None, np.array([0.0, 0.0, 0.0, 1.0]), np.zeros(5)
+        
+        history = list(self.packet_history)
+        
+        # Nếu thời gian tìm kiếm cũ hơn gói tin cũ nhất
+        if target_time <= history[0]["pkt_time"]:
+            return history[0]["pos"], history[0]["quat"], history[0]["flex"]
+        
+        # Nếu mới hơn gói tin mới nhất
+        if target_time >= history[-1]["pkt_time"]:
+            return history[-1]["pos"], history[-1]["quat"], history[-1]["flex"]
+        
+        # Tìm khoảng lân cận để nội suy
+        for i in range(len(history) - 1):
+            p1 = history[i]
+            p2 = history[i+1]
+            if p1["pkt_time"] <= target_time <= p2["pkt_time"]:
+                gap = p2["pkt_time"] - p1["pkt_time"]
+                if gap < 1e-6:
+                    return p1["pos"], p1["quat"], p1["flex"]
+                alpha = (target_time - p1["pkt_time"]) / gap
+                pos_interp = (1.0 - alpha) * p1["pos"] + alpha * p2["pos"]
+                quat_interp = p1["quat"]
+                flex_interp = (1.0 - alpha) * p1["flex"] + alpha * p2["flex"]
+                return pos_interp, quat_interp, flex_interp
+                
+        return history[-1]["pos"], history[-1]["quat"], history[-1]["flex"]
+
     def run(self):
         """Vòng lặp chính đơn luồng (Single-thread loop) tương thích 100% với Omniverse GUI"""
         dt = 0.01
@@ -206,7 +238,14 @@ class HILSimulationScenario1:
                                 "pos": target_pos,
                                 "quat": target_quat,
                                 "flex": finger_flex,
-                                "delay": delay
+                                "delay": delay,
+                                "pkt_time": pkt_time
+                            })
+                            self.packet_history.append({
+                                "pkt_time": pkt_time,
+                                "pos": target_pos,
+                                "quat": target_quat,
+                                "flex": finger_flex
                             })
                     except BlockingIOError:
                         break
@@ -218,6 +257,7 @@ class HILSimulationScenario1:
                 target_quat = np.array([0.0, 0.0, 0.0, 1.0])
                 finger_flex = np.zeros(5)
                 target_delay = 0.0
+                pkt = None
                 
                 while self.packet_queue and self.packet_queue[0]["scheduled_time"] <= curr_real_time:
                     pkt = self.packet_queue.popleft()
@@ -227,7 +267,7 @@ class HILSimulationScenario1:
                     target_delay = pkt["delay"]
                 
                 # 3. Tính toán điều khiển bám vị trí nếu có gói tin đến hạn
-                if target_pos is not None:
+                if target_pos is not None and pkt is not None:
                     if self.start_time is None:
                         self.start_time = curr_real_time
                     
@@ -243,7 +283,13 @@ class HILSimulationScenario1:
                     tau_filt_dot = (target_delay - self.tau_filt) / self.T_f
                     self.tau_filt += tau_filt_dot * dt
                     
-                    e_prop = target_pos - self.x_curr_prop
+                    # Nội suy mục tiêu tại thời điểm trễ đã lọc LPF để khử jitter
+                    t_target_filt = pkt["pkt_time"] + (target_delay - self.tau_filt)
+                    pos_filt, _, _ = self.interpolate_target_position(t_target_filt)
+                    if pos_filt is None:
+                        pos_filt = target_pos
+                    
+                    e_prop = pos_filt - self.x_curr_prop
                     self.err_prop_history.append(e_prop)
                     
                     hist_steps = int(self.tau_filt / dt)
