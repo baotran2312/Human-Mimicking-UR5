@@ -1,3 +1,33 @@
+import argparse
+import os
+import sys
+
+# Thêm đường dẫn tìm kiếm package pybullet phòng trường hợp môi trường chưa load
+for site_pkg in [
+    "/home/nhglab/anaconda3/envs/env_isaacsim/lib/python3.11/site-packages",
+    "/home/nhglab/anaconda3/envs/hil_env/lib/python3.10/site-packages",
+    "/home/nhglab/anaconda3/lib/python3.13/site-packages",
+]:
+    if os.path.exists(site_pkg) and site_pkg not in sys.path:
+        sys.path.append(site_pkg)
+
+# Khởi chạy Isaac Sim AppLauncher nếu được gọi từ isaaclab.sh
+try:
+    from isaaclab.app import AppLauncher
+    parser = argparse.ArgumentParser(description="Isaac Sim HIL Scenario 1 Client")
+    parser.add_argument("--ip", type=str, default="0.0.0.0", help="UDP bind IP address")
+    parser.add_argument("--port", type=int, default=5005, help="UDP bind port")
+    parser.add_argument("--speed", type=float, default=1.0, help="Simulation speed factor")
+    AppLauncher.add_app_launcher_args(parser)
+    args_cli = parser.parse_args()
+    app_launcher = AppLauncher(args_cli)
+    simulation_app = app_launcher.app
+    HAS_ISAAC_SIM = True
+except (ImportError, Exception):
+    simulation_app = None
+    HAS_ISAAC_SIM = False
+    args_cli = None
+
 import socket
 import struct
 import time
@@ -5,11 +35,27 @@ import threading
 import numpy as np
 from collections import deque
 
+# Import modules từ hệ thống HIL & Seqhandisaac
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+seq3_path = "/home/nhglab/Tri/Seqhandisaac/seq_three_stages/source/seq3"
+if os.path.exists(seq3_path) and seq3_path not in sys.path:
+    sys.path.insert(0, seq3_path)
+
+try:
+    import torch
+    from seq3.assets import ARM_JOINTS, FINGER_JOINTS, CAMERA_POS, camera_target
+    from seq3.scene import build_scene
+    from retargeting_solver import RetargetingSolver
+    HAS_ROBOT_SIM = HAS_ISAAC_SIM
+except Exception as e:
+    HAS_ROBOT_SIM = False
+    print(f"[WARN] Đang chạy chế độ đo đạc số liệu thuần (không có giao diện Isaac Sim 3D): {e}")
+
 class HILSimulationScenario1:
     def __init__(self):
-        # Mạng nhận
-        self.UDP_IP = "0.0.0.0"
-        self.UDP_PORT = 5005
+        # Mạng nhận UDP
+        self.UDP_IP = args_cli.ip if args_cli else "0.0.0.0"
+        self.UDP_PORT = args_cli.port if args_cli else 5005
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.UDP_IP, self.UDP_PORT))
         
@@ -41,8 +87,39 @@ class HILSimulationScenario1:
         self.q_dot_std_history = []
         self.q_dot_prop_history = []
         
-        # Khóa đồng bộ
-        self.lock = threading.Lock()
+        # Danh sách lưu trữ dữ liệu để xuất ra CSV
+        self.csv_records = []
+
+    def save_csv(self):
+        if not self.csv_records:
+            return
+        import csv
+        os.makedirs("data", exist_ok=True)
+        csv_file = os.path.join("data", "hil_scenario1_results.csv")
+        fieldnames = list(self.csv_records[0].keys())
+        with open(csv_file, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(self.csv_records)
+        print(f"\n[INFO] Đã xuất thành công {len(self.csv_records)} dòng kết quả ra file: {csv_file}")
+
+        # Đồng thời tạo file tổng hợp summary.csv
+        if self.err_std_history and self.err_prop_history:
+            dt = 0.01
+            mae_std = np.mean(np.linalg.norm(self.err_std_history, axis=1)) * 1000
+            mae_prop = np.mean(np.linalg.norm(self.err_prop_history, axis=1)) * 1000
+            q_ddot_std = np.diff(self.q_dot_std_history, axis=0) / dt if len(self.q_dot_std_history) > 1 else np.zeros((1, 6))
+            q_ddot_prop = np.diff(self.q_dot_prop_history, axis=0) / dt if len(self.q_dot_prop_history) > 1 else np.zeros((1, 6))
+            jvci_std = np.sum(np.square(np.linalg.norm(q_ddot_std, axis=1))) * dt
+            jvci_prop = np.sum(np.square(np.linalg.norm(q_ddot_prop, axis=1))) * dt
+
+            summary_file = os.path.join("data", "hil_scenario1_summary.csv")
+            with open(summary_file, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement_Percent"])
+                writer.writerow(["MAE_mm", round(mae_std, 2), round(mae_prop, 2), round(((mae_std - mae_prop)/mae_std)*100, 1)])
+                writer.writerow(["JVCI", round(jvci_std, 2), round(jvci_prop, 2), round(((jvci_std - jvci_prop)/jvci_std)*100, 1)])
+            print(f"[INFO] Đã xuất file tổng hợp kết quả: {summary_file}")
 
     def receive_packets(self):
         """Luồng nhận gói tin thô liên tục từ Laptop qua mạng"""
@@ -59,7 +136,6 @@ class HILSimulationScenario1:
                     finger_flex = np.array(payload[8:13])
                     
                     # Mô phỏng độ trễ mạng thực tế (True + Jitter) cho gói tin này
-                    # Trễ = trễ trung bình + Jitter ngẫu nhiên
                     delay = self.tau_mean + np.random.uniform(-self.jitter_amp, self.jitter_amp)
                     scheduled_time = time.time() + delay
                     
@@ -76,26 +152,29 @@ class HILSimulationScenario1:
                     print(f"[ERROR] Lỗi nhận gói tin: {e}")
 
     def control_loop(self):
-        """Luồng điều khiển mô phỏng HIL chạy ở tần số 100 Hz"""
+        """Luồng điều khiển chính chạy trực tiếp trên Main Thread để cập nhật UI Omniverse"""
         dt = 0.01
         print("\n==================================================================")
         print(" PC RECEIVER (HIL SCENARIO 1): ĐANG CHỜ NHẬN DỮ LIỆU TỪ WEBCAM LAPTOP...")
         print(" Chạy camera_stream_raw.py trên Laptop để bắt đầu thực nghiệm.")
         print("==================================================================\n")
         
-        while self.running:
+        while self.running and (simulation_app is None or simulation_app.is_running()):
             loop_start = time.time()
             curr_real_time = time.time()
             
             # Lấy gói tin đã đến hạn nhận (sau khi đi qua độ trễ mạng mô phỏng)
             target_pos = None
+            target_quat = np.array([0.0, 0.0, 0.0, 1.0])
+            finger_flex = np.zeros(5)
             target_delay = 0.0
             
             with self.lock:
-                # Tìm gói tin đã đạt đến scheduled_time
                 while self.packet_queue and self.packet_queue[0]["scheduled_time"] <= curr_real_time:
                     pkt = self.packet_queue.popleft()
                     target_pos = pkt["pos"]
+                    target_quat = pkt["quat"]
+                    finger_flex = pkt["flex"]
                     target_delay = pkt["delay"]
             
             if target_pos is not None:
@@ -111,27 +190,66 @@ class HILSimulationScenario1:
                 self.q_dot_std_history.append(np.tile(q_dot_std_step[:1], 6))
                 
                 # --- B. ĐIỀU KHIỂN ĐỀ XUẤT (Proposed CLIK - LPF + Bù trễ) ---
-                # Động học lọc thông thấp LPF
                 tau_filt_dot = (target_delay - self.tau_filt) / self.T_f
                 self.tau_filt += tau_filt_dot * dt
                 
                 e_prop = target_pos - self.x_curr_prop
                 self.err_prop_history.append(e_prop)
                 
-                # Lấy sai số trễ trong quá khứ từ lịch sử (Delay feedback term)
                 hist_steps = int(self.tau_filt / dt)
                 if len(self.err_prop_history) > hist_steps:
                     e_prop_delayed = self.err_prop_history[-hist_steps]
                 else:
                     e_prop_delayed = e_prop
                 
-                # Vận tốc điều khiển bám
                 q_dot_prop_step = self.K_p.dot(e_prop) + self.K_d.dot(e_prop_delayed)
                 self.x_curr_prop += q_dot_prop_step * dt
                 self.q_dot_prop_history.append(np.tile(q_dot_prop_step[:1], 6))
+
+                # Ghi lại dòng dữ liệu CSV
+                elapsed = curr_real_time - self.start_time
+                self.csv_records.append({
+                    "timestamp": round(elapsed, 4),
+                    "target_x": round(float(target_pos[0]), 5),
+                    "target_y": round(float(target_pos[1]), 5),
+                    "target_z": round(float(target_pos[2]), 5),
+                    "std_x": round(float(self.x_curr_std[0]), 5),
+                    "std_y": round(float(self.x_curr_std[1]), 5),
+                    "std_z": round(float(self.x_curr_std[2]), 5),
+                    "prop_x": round(float(self.x_curr_prop[0]), 5),
+                    "prop_y": round(float(self.x_curr_prop[1]), 5),
+                    "prop_z": round(float(self.x_curr_prop[2]), 5),
+                    "err_std_mm": round(float(np.linalg.norm(e_std) * 1000), 2),
+                    "err_prop_mm": round(float(np.linalg.norm(e_prop) * 1000), 2),
+                    "delay_ms": round(float(target_delay * 1000), 1),
+                    "tau_filt_ms": round(float(self.tau_filt * 1000), 1)
+                })
+
+                # --- C. CẬP NHẬT TRONG ISAAC SIM (NẾU BẬT) ---
+                if self.has_sim:
+                    try:
+                        arm_angles = self.solver.solve_arm_ik(self.x_curr_prop, target_quat)
+                        self.q[:, self.arm_ids] = torch.tensor(arm_angles, device=self.device)
+                        
+                        # Ánh xạ ngón tay thô
+                        for i, f_name in enumerate(["index", "middle", "ring", "pinky"]):
+                            flex_val = finger_flex[i] * 1.309
+                            if f_name in self.hand_ids:
+                                for hid in self.hand_ids[f_name][1:]:
+                                    self.q[0, hid] = flex_val
+                        if "thumb" in self.hand_ids:
+                            self.q[0, self.hand_ids["thumb"][0]] = -finger_flex[4] * 1.309
+                            for hid in self.hand_ids["thumb"][1:]:
+                                self.q[0, hid] = finger_flex[4] * 1.571
+
+                        self.robot.set_joint_position_target(self.q)
+                        self.robot.write_data_to_sim()
+                        self.sim.step()
+                        self.robot.update(self.physics_dt)
+                    except Exception:
+                        pass
                 
                 # Tính toán và xuất kết quả đối chứng tức thời mỗi 2 giây
-                elapsed = curr_real_time - self.start_time
                 if len(self.err_std_history) % 200 == 0:
                     mae_std = np.mean(np.linalg.norm(self.err_std_history, axis=1)) * 1000
                     mae_prop = np.mean(np.linalg.norm(self.err_prop_history, axis=1)) * 1000
@@ -144,28 +262,30 @@ class HILSimulationScenario1:
                     print(f"Time: {elapsed:.1f}s | AnyTeleop MAE: {mae_std:.2f}mm | Proposed MAE: {mae_prop:.2f}mm (Imp: {((mae_std-mae_prop)/mae_std)*100:.1f}%)")
                     print(f"            | AnyTeleop JVCI: {jvci_std:.1f}  | Proposed JVCI: {jvci_prop:.1f} (Imp: {((jvci_std-jvci_prop)/jvci_std)*100:.1f}%)")
                     print("-" * 75)
-            
+            elif self.has_sim:
+                self.sim.step()
+
             # Đảm bảo tần số chạy ổn định ở 100 Hz
             elapsed = time.time() - loop_start
             sleep_time = max(0.001, dt - elapsed)
             time.sleep(sleep_time)
 
     def start(self):
-        self.t_recv = threading.Thread(target=self.receive_packets)
-        self.t_ctrl = threading.Thread(target=self.control_loop)
-        
+        # Chạy luồng nhận mạng ở background
+        self.t_recv = threading.Thread(target=self.receive_packets, daemon=True)
         self.t_recv.start()
-        self.t_ctrl.start()
         
+        # Chạy luồng điều khiển + mô phỏng Omniverse trực tiếp trên Main Thread
         try:
-            while True:
-                time.sleep(1)
+            self.control_loop()
         except KeyboardInterrupt:
             print("\n[INFO] Đang dừng hệ thống HIL...")
+        finally:
             self.running = False
             self.sock.close()
-            self.t_recv.join()
-            self.t_ctrl.join()
+            self.save_csv()
+            if simulation_app is not None:
+                simulation_app.close()
             print("[INFO] Đã dừng hoàn toàn.")
 
 if __name__ == "__main__":

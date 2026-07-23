@@ -79,31 +79,88 @@ class RetargetingSolver:
     def map_finger_joints(self, landmarks):
         """Ánh xạ cử chỉ tay người (21 keypoints từ MediaPipe) sang 19 khớp ngón tay robot"""
         # landmarks là danh sách 21 điểm (x, y, z) từ MediaPipe
-        # Ta áp dụng phương pháp ánh xạ góc co duỗi tương đối (Heuristic Flexion Mapping)
         
         joint_targets = {}
         
-        # Định nghĩa các ngón tay và các khớp tương ứng từ MediaPipe
-        # Ngón cái: 1, 2, 3, 4 | Ngón trỏ: 5, 6, 7, 8 | Ngón giữa: 9, 10, 11, 12
-        # Ngón nhẫn: 13, 14, 15, 16 | Ngón út: 17, 18, 19, 20
+        # --- 1. TÍNH GÓC DẠNG/KHÉP (ABDUCTION/ADDUCTION - J1 JOINTS) ---
+        # Trích xuất tọa độ 3D của các điểm mốc chính trên bàn tay
+        p0 = np.array([landmarks[0].x, landmarks[0].y, landmarks[0].z])  # Cổ tay (Wrist)
+        p5 = np.array([landmarks[5].x, landmarks[5].y, landmarks[5].z])  # Gốc ngón trỏ (Index MCP)
+        p9 = np.array([landmarks[9].x, landmarks[9].y, landmarks[9].z])  # Gốc ngón giữa (Middle MCP)
+        p17 = np.array([landmarks[17].x, landmarks[17].y, landmarks[17].z])  # Gốc ngón út (Pinky MCP)
         
-        # Hàm tính góc gập (flexion) của một ngón dựa vào khoảng cách từ gốc đến đầu ngón
+        # Định nghĩa hệ trục tọa độ của lòng bàn tay (Palm Local Frame)
+        v_palm = p9 - p0
+        v_palm_len = np.linalg.norm(v_palm)
+        y_palm = v_palm / v_palm_len if v_palm_len > 1e-6 else np.array([0.0, 1.0, 0.0])
+        
+        v_lat = p17 - p5
+        z_palm = np.cross(y_palm, v_lat)
+        z_palm_len = np.linalg.norm(z_palm)
+        z_palm = z_palm / z_palm_len if z_palm_len > 1e-6 else np.array([0.0, 0.0, 1.0])
+        
+        x_palm = np.cross(y_palm, z_palm)
+        
+        # Cặp chỉ số MCP -> PIP của các ngón để tính hướng đốt ngón thứ nhất
+        finger_mcp_pip = {
+            "index": (5, 6),
+            "middle": (9, 10),
+            "ring": (13, 14),
+            "pinky": (17, 18)
+        }
+        
+        finger_angles_raw = {}
+        for f_name, (mcp_idx, pip_idx) in finger_mcp_pip.items():
+            pmcp = np.array([landmarks[mcp_idx].x, landmarks[mcp_idx].y, landmarks[mcp_idx].z])
+            ppip = np.array([landmarks[pip_idx].x, landmarks[pip_idx].y, landmarks[pip_idx].z])
+            v_seg = ppip - pmcp
+            
+            # Chiếu đốt ngón lên hệ trục lòng bàn tay
+            x_seg = np.dot(v_seg, x_palm)
+            y_seg = np.dot(v_seg, y_palm)
+            finger_angles_raw[f_name] = np.arctan2(x_seg, y_seg)
+
+        # Mốc trung tính (neutral spread angle) khi tay xòe tự nhiên (đối chiếu trực tiếp với y_palm)
+        neutral_bias = {
+            "index": -0.15,
+            "middle": 0.0,
+            "ring": 0.15,
+            "pinky": 0.30
+        }
+        
+        spread_gain = 1.5
+        j1_limit = 0.1396
+        
+        # --- 2. TÍNH GÓC GẬP NGÓN (FLEXION - J2->J4 JOINTS) ---
         def get_finger_flexion(mcp_idx, tip_idx, wrist_idx=0):
-            # Tính khoảng cách từ cổ tay đến đầu ngón và gốc ngón
             wrist_pos = np.array([landmarks[wrist_idx].x, landmarks[wrist_idx].y, landmarks[wrist_idx].z])
             mcp_pos = np.array([landmarks[mcp_idx].x, landmarks[mcp_idx].y, landmarks[mcp_idx].z])
             tip_pos = np.array([landmarks[tip_idx].x, landmarks[tip_idx].y, landmarks[tip_idx].z])
             
-            # Khoảng cách tối đa (khi ngón duỗi thẳng)
             max_len = np.linalg.norm(mcp_pos - wrist_pos) + np.linalg.norm(tip_pos - mcp_pos)
-            # Khoảng cách hiện tại từ cổ tay đến đầu ngón
             curr_len = np.linalg.norm(tip_pos - wrist_pos)
             
-            # Chuẩn hóa giá trị flexion từ 0.0 (duỗi thẳng) đến 1.0 (co hoàn toàn)
             flexion = np.clip((max_len - curr_len) / (max_len * 0.4), 0.0, 1.0)
             return flexion
 
-        # 1. Ánh xạ các ngón trỏ, giữa, áp út, út (Mỗi ngón có 4 khớp J1->J4)
+        # Tính độ gập để làm mượt / dập nhiễu dạng khép (fade) khi ngón tay co lại
+        index_flex = get_finger_flexion(5, 8)
+        middle_flex = get_finger_flexion(9, 12)
+        ring_flex = get_finger_flexion(13, 16)
+        pinky_flex = get_finger_flexion(17, 20)
+        
+        # Hệ số fade: 1.0 khi duỗi thẳng (dạng khép tự do), về 0.0 khi co lại (khóa về trung tính)
+        index_fade = 1.0 - np.clip(index_flex, 0.0, 1.0)
+        middle_fade = 1.0 - np.clip(middle_flex, 0.0, 1.0)
+        ring_fade = 1.0 - np.clip(ring_flex, 0.0, 1.0)
+        pinky_fade = 1.0 - np.clip(pinky_flex, 0.0, 1.0)
+
+        # Gán góc J1 độc lập kết hợp hệ số fade
+        joint_targets["index_J1"] = np.clip((finger_angles_raw["index"] - neutral_bias["index"]) * spread_gain * index_fade, -j1_limit, j1_limit)
+        joint_targets["middle_J1"] = np.clip((finger_angles_raw["middle"] - neutral_bias["middle"]) * spread_gain * middle_fade, -j1_limit, j1_limit)
+        joint_targets["ring_J1"] = np.clip((finger_angles_raw["ring"] - neutral_bias["ring"]) * spread_gain * ring_fade, -j1_limit, j1_limit)
+        joint_targets["pinky_J1"] = np.clip((finger_angles_raw["pinky"] - neutral_bias["pinky"]) * spread_gain * pinky_fade, -j1_limit, j1_limit)
+
         fingers = {
             "index": (5, 8),
             "middle": (9, 12),
@@ -113,18 +170,13 @@ class RetargetingSolver:
         
         for f_name, (mcp, tip) in fingers.items():
             flex = get_finger_flexion(mcp, tip)
-            
-            # J1 (Adduction/Abduction - khép/xòe ngón): Mặc định giữ thẳng (0.0)
-            joint_targets[f"{f_name}_J1"] = 0.0
-            
-            # J2, J3, J4 (Flexion - Gập ngón): Ánh xạ tuyến tính vào dải giới hạn [0.0, 1.309] radian
             max_limit = self.joint_info[f"{f_name}_J2"]["upper_limit"]
             angle = flex * max_limit
             joint_targets[f"{f_name}_J2"] = angle
             joint_targets[f"{f_name}_J3"] = angle
             joint_targets[f"{f_name}_J4"] = angle
 
-        # 2. Ánh xạ ngón cái (Thumb - có 3 khớp j1->j3)
+        # 3. Ánh xạ ngón cái (Thumb - có 3 khớp j1->j3)
         # Tính độ gập ngón cái dựa vào khoảng cách ngón cái đến ngón trỏ (cho cử chỉ Pinch)
         thumb_tip = np.array([landmarks[4].x, landmarks[4].y, landmarks[4].z])
         index_mcp = np.array([landmarks[5].x, landmarks[5].y, landmarks[5].z])
@@ -137,6 +189,67 @@ class RetargetingSolver:
         joint_targets["thumb_j3"] = thumb_flex * 1.571
 
         return joint_targets
+
+    def solve_hand_orientation(self, landmarks):
+        """Tính toán hướng quaternion của bàn tay người từ MediaPipe landmarks"""
+        p0 = np.array([landmarks[0].x, landmarks[0].y, landmarks[0].z])  # Wrist
+        p5 = np.array([landmarks[5].x, landmarks[5].y, landmarks[5].z])  # Index MCP
+        p9 = np.array([landmarks[9].x, landmarks[9].y, landmarks[9].z])  # Middle MCP
+        p17 = np.array([landmarks[17].x, landmarks[17].y, landmarks[17].z])  # Pinky MCP
+        
+        v_palm = p9 - p0
+        v_palm_len = np.linalg.norm(v_palm)
+        y_palm = v_palm / v_palm_len if v_palm_len > 1e-6 else np.array([0.0, 1.0, 0.0])
+        
+        v_lat = p17 - p5
+        z_palm = np.cross(y_palm, v_lat)
+        z_palm_len = np.linalg.norm(z_palm)
+        z_palm = z_palm / z_palm_len if z_palm_len > 1e-6 else np.array([0.0, 0.0, 1.0])
+        
+        x_palm = np.cross(y_palm, z_palm)
+        
+        # Tạo ma trận xoay tương đối R_rel = [X_palm, -Y_palm, -Z_palm]
+        # Hướng mặc định (identity) của robot là hướng thẳng xuống bàn
+        R = np.zeros((3, 3))
+        R[:, 0] = x_palm
+        R[:, 1] = -y_palm
+        R[:, 2] = -z_palm
+        
+        # Trực giao hóa ma trận xoay bằng SVD để tránh sai số cơ học
+        try:
+            U, _, Vt = np.linalg.svd(R)
+            R = np.dot(U, Vt)
+        except Exception:
+            pass
+            
+        # Chuyển đổi R sang quaternion [qx, qy, qz, qw] theo chuẩn PyBullet
+        tr = np.trace(R)
+        if tr > 0:
+            S = np.sqrt(tr + 1.0) * 2
+            qw = 0.25 * S
+            qx = (R[2, 1] - R[1, 2]) / S
+            qy = (R[0, 2] - R[2, 0]) / S
+            qz = (R[1, 0] - R[0, 1]) / S
+        elif (R[0, 0] > R[1, 1]) and (R[0, 0] > R[2, 2]):
+            S = np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2]) * 2
+            qw = (R[2, 1] - R[1, 2]) / S
+            qx = 0.25 * S
+            qy = (R[0, 1] + R[1, 0]) / S
+            qz = (R[0, 2] + R[2, 0]) / S
+        elif R[1, 1] > R[2, 2]:
+            S = np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2]) * 2
+            qw = (R[0, 2] - R[2, 0]) / S
+            qx = (R[0, 1] + R[1, 0]) / S
+            qy = 0.25 * S
+            qz = (R[1, 2] + R[2, 1]) / S
+        else:
+            S = np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1]) * 2
+            qw = (R[1, 0] - R[0, 1]) / S
+            qx = (R[0, 2] + R[2, 0]) / S
+            qy = (R[1, 2] + R[2, 1]) / S
+            qz = 0.25 * S
+            
+        return [qx, qy, qz, qw]
 
     def disconnect(self):
         p.disconnect(self.physics_client)

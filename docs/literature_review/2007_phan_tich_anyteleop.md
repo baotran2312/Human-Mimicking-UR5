@@ -112,6 +112,7 @@ HumanMimic/
    * Sử dụng **Pinocchio** để load file `ur5dex.urdf`.
    * Viết thuật toán giải tối ưu hóa góc khớp tay dựa trên khoảng cách Euclid từ lòng bàn tay đến 5 đầu ngón tay.
 3. **Bước 3: Kết nối Truyền thông (Bridge Integration)**:
-   * Xây dựng luồng gửi-nhận qua UDP socket giữa script thị giác ngoài máy thật và môi trường Isaac Sim ảo.
-4. **Bước 4: Vận hành thử nghiệm (Teleoperation Demo)**:
-   * Người vận hành cử động trước camera RealSense, quan sát robot ảo di chuyển bám theo trong Isaac Sim để đánh giá độ trễ và độ mượt.
+   * Xây dựng luồng gửi-nhận nhị phân phẳng (flat binary 100 bytes / 25 floats) để giảm thiểu độ trễ mạng Wi-Fi cục bộ giữa Laptop và PC phòng lab.
+4. **Bước 4: Vận hành thử nghiệm (Teleoperation Demo - WiFi HIL)**:
+   * Khởi chạy mô phỏng Isaac Sim trên PC phòng Lab (`isaac_client_wifi.py`) đóng vai trò là bên nhận (Receiver).
+   * Khởi chạy bộ đọc camera và xử lý thị giác (MediaPipe + IK) trên Laptop cá nhân (`camera_stream_wifi.py` hoặc `realsense_stream_wifi.py`) đóng vai trò là bên gửi (Sender), truyền tham số góc khớp nhị phân phẳng qua UDP WiFi nội bộ tới IP của PC để điều khiển robot ảo bám theo thời gian thực.

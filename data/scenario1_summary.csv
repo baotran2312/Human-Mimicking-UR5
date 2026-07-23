@@ -1,0 +1,4 @@
+Metric,AnyTeleop_Standard,Proposed_CLIK,Improvement_Percent
+MAE_mm,3.64,0.55,85.0
+JVCI,300.24,141.5,52.9
+Trajectory_Roughness_mm,2.78,0.24,91.5

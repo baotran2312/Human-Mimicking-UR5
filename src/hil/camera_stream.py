@@ -103,18 +103,29 @@ def main():
                 finger_angles = solver.map_finger_joints(hand_landmarks.landmark)
                 
                 # --- 2. GIẢI IK CHO CÁNH TAY UR5 (ARM IK) ---
-                # Lấy vị trí cổ tay (WRIST) trong ảnh làm đích điều khiển (Target TCP)
-                # Chuẩn hóa tọa độ x, y về dải làm việc của UR5 trong sim (mét)
                 wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
+                middle_mcp = hand_landmarks.landmark[9]
                 
-                # Ánh xạ tọa độ ảnh [0, 1] sang dải làm việc thực tế của UR5:
-                # X: [-0.4, 0.4] m | Y: [0.3, 0.7] m | Z: [0.8, 1.2] m
+                # Ước lượng khoảng cách tay tới camera dựa trên kích thước bàn tay 2D trong ảnh
+                hand_size_2d = math.sqrt((wrist.x - middle_mcp.x)**2 + (wrist.y - middle_mcp.y)**2)
+                hand_size_2d = max(0.05, min(0.3, hand_size_2d))
+                
+                # Ánh xạ khoảng cách (độ sâu) sang trục Y của robot (tiến-lùi)
+                y_min, y_max = 0.3, 0.6
+                size_min, size_max = 0.08, 0.22
+                hand_norm = (hand_size_2d - size_min) / (size_max - size_min)
+                hand_norm = max(0.0, min(1.0, hand_norm))
+                target_y = y_min + hand_norm * (y_max - y_min)
+                
+                # Ánh xạ tọa độ ngang (camera X) sang trục X của robot (trái-phải)
                 target_x = (wrist.x - 0.5) * 0.8
-                target_y = 0.5 + (1.0 - wrist.y - 0.5) * 0.4
-                target_z = 0.9 - (wrist.z * 0.5)  # wrist.z là độ sâu tương đối
                 
-                # Hướng cổ tay mặc định (hướng thẳng xuống mặt bàn)
-                target_quat = [0, 0, 0, 1] 
+                # Ánh xạ tọa độ dọc (camera Y) sang trục Z của robot (lên-xuống)
+                z_min, z_max = 0.8, 1.1
+                target_z = z_min + (1.0 - wrist.y) * (z_max - z_min)
+                
+                # Giải hướng bàn tay người làm target_quat cho robot
+                target_quat = solver.solve_hand_orientation(hand_landmarks.landmark)
                 
                 # Giải động học ngược cánh tay UR5
                 arm_angles = solver.solve_arm_ik([target_x, target_y, target_z], target_quat)

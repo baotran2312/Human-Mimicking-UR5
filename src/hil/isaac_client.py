@@ -2,7 +2,7 @@ import argparse
 from isaaclab.app import AppLauncher
 
 # Cấu hình Argument Parser cho Isaac Sim
-parser = argparse.ArgumentParser(description="Isaac Sim UDP Client (WiFi Binary) for Teleoperation")
+parser = argparse.ArgumentParser(description="Isaac Sim UDP Client for Teleoperation")
 parser.add_argument("--ip", type=str, default="0.0.0.0", help="UDP bind IP address")
 parser.add_argument("--port", type=int, default=5005, help="UDP bind port")
 parser.add_argument("--speed", type=float, default=1.0, help="Simulation speed factor")
@@ -18,7 +18,7 @@ import sys
 import torch
 import time
 import socket
-import struct
+import json
 import numpy as np
 
 # Thêm thư mục mã nguồn seq3 từ Seqhandisaac vào sys.path
@@ -76,9 +76,8 @@ def main():
         sock.bind((args_cli.ip, args_cli.port))
         sock.setblocking(False)
         print("\n==================================================================")
-        print(" ISAAC CLIENT (WIFI RECEIVER): LẮNG NGHE GÓI TIN NHỊ PHÂN 25-DOF")
-        print(f" Đang chờ nhận mảng phẳng 25 float (100 bytes) trên cổng: {args_cli.port}")
-        print(" Hãy chạy camera_stream_wifi.py từ Laptop để truyền dữ liệu.")
+        print(f" UDP CLIENT ĐANG LẮNG NGHE TRÊN CỔNG: {args_cli.port}")
+        print(" Hãy chạy realsense_stream.py hoặc camera_stream.py để truyền dữ liệu.")
         print(" Nhấn Ctrl+C hoặc đóng cửa sổ mô phỏng để THOÁT.")
         print("==================================================================\n")
     except Exception as e:
@@ -90,40 +89,35 @@ def main():
         while simulation_app.is_running():
             t0 = time.time()
 
-            # Đọc toàn bộ gói tin UDP nhị phân hiện có trong hàng đợi để lấy gói mới nhất
-            latest_data = None
+            # Đọc toàn bộ gói tin UDP hiện có trong hàng đợi để lấy gói mới nhất
+            latest_payload = None
             while True:
                 try:
-                    data, addr = sock.recvfrom(1024)
-                    latest_data = data
+                    data, addr = sock.recvfrom(4096)
+                    latest_payload = json.loads(data.decode("utf-8"))
                 except BlockingIOError:
                     break
                 except Exception as e:
                     print(f"[WARN] Lỗi khi nhận gói tin UDP: {e}")
                     break
 
-            # Giải mã và cập nhật góc khớp mục tiêu nếu nhận được gói tin mới
-            if latest_data is not None:
-                if len(latest_data) == 100:
-                    # Giải mã gói tin nhị phân (25 float)
-                    joint_values = struct.unpack("25f", latest_data)
-                    
-                    # 1. Cập nhật cánh tay UR5
-                    q[:, arm_ids] = torch.tensor(joint_values[0:6], device=device)
+            # Cập nhật góc khớp mục tiêu nếu nhận được gói tin mới
+            if latest_payload is not None:
+                # Cập nhật cánh tay UR5
+                arm_angles = latest_payload.get("arm", [])
+                if len(arm_angles) == 6:
+                    q[:, arm_ids] = torch.tensor(arm_angles, device=device)
 
-                    # 2. Cập nhật các ngón tay theo sơ đồ gói tin của camera_stream_wifi.py:
-                    # Index (6:10), Middle (10:14), Ring (14:18), Pinky (18:22), Thumb (22:25)
-                    q[:, hand_ids["index"]] = torch.tensor(joint_values[6:10], device=device)
-                    q[:, hand_ids["middle"]] = torch.tensor(joint_values[10:14], device=device)
-                    q[:, hand_ids["ring"]] = torch.tensor(joint_values[14:18], device=device)
-                    q[:, hand_ids["pinky"]] = torch.tensor(joint_values[18:22], device=device)
-                    q[:, hand_ids["thumb"]] = torch.tensor(joint_values[22:25], device=device)
-                    
-                    # Hiển thị log kiểm tra định kỳ (ở tốc độ hiển thị vừa phải)
-                    if int(time.time() * 2) % 4 == 0:
-                        print(f"[RECV] WiFi Binary Packet. UR5 Arm: {np.round(joint_values[:6], 2)}")
-                else:
-                    print(f"[WARN] Nhận gói tin sai kích thước ({len(latest_data)} bytes)")
+                # Cập nhật bàn tay 19-DoF
+                hand_data = latest_payload.get("hand", {})
+                for finger_name, ids in hand_ids.items():
+                    angles = hand_data.get(finger_name, [])
+                    if len(angles) == len(ids):
+                       q[:, ids] = torch.tensor(angles, device=device)
+                       
+                # Hiển thị log kiểm tra định kỳ (ở tốc độ hiển thị vừa phải)
+                if int(time.time() * 2) % 4 == 0:
+                    print(f"[RECV] TCP/IK updated. Arm angles: {np.round(arm_angles, 2)}")
 
             # Gửi target pos mới xuống simulator và thực hiện bước sim tiếp theo
             robot.set_joint_position_target(q)

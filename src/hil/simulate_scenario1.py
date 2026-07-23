@@ -116,7 +116,38 @@ def simulate_system():
     smooth_std = np.std(np.diff(np.linalg.norm(err_std, axis=1))) * 1000
     smooth_prop = np.std(np.diff(np.linalg.norm(err_prop, axis=1))) * 1000
 
-    # 6. PRINT RESULTS
+    # 6. EXPORT TO CSV
+    import os
+    import csv
+    os.makedirs("data", exist_ok=True)
+    
+    csv_file = os.path.join("data", "scenario1_simulation_results.csv")
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "timestamp", "tau_raw_ms", "tau_filt_ms",
+            "err_std_mm", "err_prop_mm"
+        ])
+        for i in range(steps):
+            writer.writerow([
+                round(float(t_arr[i]), 4),
+                round(float(tau_raw[i] * 1000), 1),
+                round(float(tau_filt[i] * 1000), 1),
+                round(float(np.linalg.norm(err_std[i]) * 1000), 2),
+                round(float(np.linalg.norm(err_prop[i]) * 1000), 2)
+            ])
+    print(f"[INFO] Đã xuất {steps} dòng kết quả mô phỏng ra file: {csv_file}")
+
+    summary_file = os.path.join("data", "scenario1_summary.csv")
+    with open(summary_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement_Percent"])
+        writer.writerow(["MAE_mm", round(mae_std, 2), round(mae_prop, 2), round(((mae_std - mae_prop)/mae_std)*100, 1)])
+        writer.writerow(["JVCI", round(jvci_std, 2), round(jvci_prop, 2), round(((jvci_std - jvci_prop)/jvci_std)*100, 1)])
+        writer.writerow(["Trajectory_Roughness_mm", round(smooth_std, 2), round(smooth_prop, 2), round(((smooth_std - smooth_prop)/smooth_std)*100, 1)])
+    print(f"[INFO] Đã xuất bảng tổng hợp chỉ số ra file: {summary_file}")
+
+    # 7. PRINT RESULTS
     print("==================================================================")
     print("  SIMULATION METRICS & COMPARISON FOR SCENARIO 1")
     print("==================================================================")
