@@ -74,6 +74,7 @@ class HILSimulationScenario1:
         # Trạng thái của Robot ảo trong mô phỏng (Arm TCP position)
         self.x_curr_std = np.array([0.18, 0.40, 0.90])
         self.x_curr_prop = np.array([0.18, 0.40, 0.90])
+        self.prev_pos_filt = None
         
         # Gains của bộ điều khiển
         self.K_p = 5.0 * np.eye(3)
@@ -289,6 +290,15 @@ class HILSimulationScenario1:
                     if pos_filt is None:
                         pos_filt = target_pos
                     
+                    # Tính vận tốc feedforward (vd_filt) bằng đạo hàm số của vị trí lọc
+                    if self.prev_pos_filt is not None:
+                        vd_filt = (pos_filt - self.prev_pos_filt) / dt
+                        # Giới hạn vận tốc tránh nổ gai đột ngột do nhiễu MediaPipe
+                        vd_filt = np.clip(vd_filt, -0.5, 0.5)
+                    else:
+                        vd_filt = np.zeros(3)
+                    self.prev_pos_filt = pos_filt.copy()
+                    
                     e_prop = pos_filt - self.x_curr_prop
                     self.err_prop_history.append(e_prop)
                     
@@ -298,7 +308,8 @@ class HILSimulationScenario1:
                     else:
                         e_prop_delayed = e_prop
                     
-                    q_dot_prop_step = self.K_p.dot(e_prop) + self.K_d.dot(e_prop_delayed)
+                    # Luật Proposed CLIK đầy đủ: feedforward + proportional + delay-feedback
+                    q_dot_prop_step = vd_filt + self.K_p.dot(e_prop) + self.K_d.dot(e_prop_delayed)
                     self.x_curr_prop += q_dot_prop_step * dt
                     self.q_dot_prop_history.append(np.tile(q_dot_prop_step[:1], 6))
 
