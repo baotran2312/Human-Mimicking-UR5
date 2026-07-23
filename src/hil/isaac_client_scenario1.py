@@ -91,6 +91,8 @@ class HILSimulationScenario1:
         
         # Danh sách lưu trữ dữ liệu để xuất ra CSV
         self.csv_records = []
+        from datetime import datetime
+        self.run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Khởi tạo mô phỏng Isaac Sim 3D nếu có môi trường
         self.has_sim = HAS_ROBOT_SIM
@@ -128,17 +130,31 @@ class HILSimulationScenario1:
                     o.update(self.physics_dt)
 
     def save_csv(self):
-        if not self.csv_records:
-            return
         import csv
         os.makedirs("data", exist_ok=True)
-        csv_file = os.path.join("data", "hil_scenario1_results.csv")
-        fieldnames = list(self.csv_records[0].keys())
-        with open(csv_file, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(self.csv_records)
-        print(f"\n[INFO] Đã xuất thành công {len(self.csv_records)} dòng kết quả ra file: {csv_file}")
+        ts = self.run_timestamp
+        
+        csv_file = os.path.join("data", f"hil_scenario1_results_{ts}.csv")
+        csv_file_latest = os.path.join("data", "hil_scenario1_results_latest.csv")
+        
+        summary_file = os.path.join("data", f"hil_scenario1_summary_{ts}.csv")
+        summary_file_latest = os.path.join("data", "hil_scenario1_summary_latest.csv")
+
+        if self.csv_records:
+            fieldnames = list(self.csv_records[0].keys())
+            for path in [csv_file, csv_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerows(self.csv_records)
+            print(f"\n[INFO] Đã xuất thành công {len(self.csv_records)} dòng kết quả ra file: {csv_file}")
+        else:
+            fieldnames = ["timestamp", "target_x", "target_y", "target_z", "std_x", "std_y", "std_z", "prop_x", "prop_y", "prop_z", "err_std_mm", "err_prop_mm", "delay_ms", "tau_filt_ms"]
+            for path in [csv_file, csv_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
+            print(f"\n[INFO] Đã tạo file CSV kết quả (đang chờ gói tin): {csv_file}")
 
         # Đồng thời tạo file tổng hợp summary.csv
         if self.err_std_history and self.err_prop_history:
@@ -150,12 +166,12 @@ class HILSimulationScenario1:
             jvci_std = np.sum(np.square(np.linalg.norm(q_ddot_std, axis=1))) * dt
             jvci_prop = np.sum(np.square(np.linalg.norm(q_ddot_prop, axis=1))) * dt
 
-            summary_file = os.path.join("data", "hil_scenario1_summary.csv")
-            with open(summary_file, "w", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement_Percent"])
-                writer.writerow(["MAE_mm", round(mae_std, 2), round(mae_prop, 2), round(((mae_std - mae_prop)/mae_std)*100, 1)])
-                writer.writerow(["JVCI", round(jvci_std, 2), round(jvci_prop, 2), round(((jvci_std - jvci_prop)/jvci_std)*100, 1)])
+            for path in [summary_file, summary_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement_Percent"])
+                    writer.writerow(["MAE_mm", round(mae_std, 2), round(mae_prop, 2), round(((mae_std - mae_prop)/mae_std)*100, 1)])
+                    writer.writerow(["JVCI", round(jvci_std, 2), round(jvci_prop, 2), round(((jvci_std - jvci_prop)/jvci_std)*100, 1)])
             print(f"[INFO] Đã xuất file tổng hợp kết quả: {summary_file}")
 
     def run(self):
@@ -291,6 +307,7 @@ class HILSimulationScenario1:
                         print(f"Time: {elapsed:.1f}s | AnyTeleop MAE: {mae_std:.2f}mm | Proposed MAE: {mae_prop:.2f}mm (Imp: {((mae_std-mae_prop)/mae_std)*100:.1f}%)")
                         print(f"            | AnyTeleop JVCI: {jvci_std:.1f}  | Proposed JVCI: {jvci_prop:.1f} (Imp: {((jvci_std-jvci_prop)/jvci_std)*100:.1f}%)")
                         print("-" * 75)
+                        self.save_csv()
                 
                 # 4. LUÔN LUÔN CẬP NHẬT ISAAC SIM VÀ PHẬT THỂ MỖI BƯỚC THỜI GIAN (Tránh lỗi đóng ứng dụng)
                 if self.has_sim:
