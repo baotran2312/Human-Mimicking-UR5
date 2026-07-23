@@ -22,8 +22,9 @@ def main():
     # Khởi tạo Socket UDP
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    # Khởi tạo MediaPipe Hands
+    # Khởi tạo MediaPipe Hands và Drawing Utilities
     mp_hands = mp.solutions.hands
+    mp_drawing = mp.solutions.drawing_utils
     hands = mp_hands.Hands(
         static_image_mode=False,
         max_num_hands=1,
@@ -55,6 +56,9 @@ def main():
 
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
+                # Vẽ các điểm khớp tay lên màn hình
+                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                
                 # Lấy tọa độ cổ tay (Wrist) đại diện cho x_d
                 wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
                 
