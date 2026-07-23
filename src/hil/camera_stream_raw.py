@@ -5,6 +5,7 @@ import struct
 import sys
 import os
 import argparse
+import math
 
 try:
     import mediapipe as mp
