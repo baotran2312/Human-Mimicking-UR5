@@ -2,17 +2,27 @@ import argparse
 import os
 import sys
 
-# Khởi chạy SimulationApp của Isaac Sim trước khi import bất kỳ thư viện USD nào
-parser = argparse.ArgumentParser(description="Isaac Sim Assembly Scene Builder")
-parser.add_argument("--headless", action="store_true", help="Run simulation headless")
-args_cli, unknown = parser.parse_known_args()
-
+# Khởi chạy AppLauncher / SimulationApp của Isaac Sim trước khi import thư viện USD
 try:
-    from omni.isaac.kit import SimulationApp
-    sim_app = SimulationApp({"headless": args_cli.headless})
-except ImportError:
-    print("[ERROR] Thư viện Isaac Sim (SimulationApp) không khả dụng. Script này phải được chạy bằng python.sh của Isaac Sim trên PC Ubuntu.")
-    exit(1)
+    from isaaclab.app import AppLauncher
+    parser = argparse.ArgumentParser(description="Isaac Sim Assembly Scene Builder")
+    parser.add_argument("--headless", action="store_true", help="Run simulation headless")
+    AppLauncher.add_app_launcher_args(parser)
+    args_cli = parser.parse_args()
+    app_launcher = AppLauncher(args_cli)
+    simulation_app = app_launcher.app
+except (ImportError, Exception):
+    try:
+        from omni.isaac.kit import SimulationApp
+        parser = argparse.ArgumentParser(description="Isaac Sim Assembly Scene Builder")
+        parser.add_argument("--headless", action="store_true", help="Run simulation headless")
+        args_cli, unknown = parser.parse_known_args()
+        simulation_app = SimulationApp({"headless": args_cli.headless})
+    except ImportError:
+        print("\n[ERROR] Thư viện Isaac Sim (SimulationApp) không khả dụng khi chạy lệnh 'python' trực tiếp.")
+        print(" Vui lòng sử dụng script wrapper 'isaaclab.sh' của Isaac Sim trên PC Ubuntu bằng lệnh sau:\n")
+        print("   /home/nhglab/IsaacLab/isaaclab.sh -p src/hil/build_grasp_scene.py\n")
+        sys.exit(1)
 
 import omni
 from omni.isaac.core import SimulationContext
@@ -48,7 +58,7 @@ def main():
     ur5_prim = stage.GetPrimAtPath("/World/UR5")
     if not ur5_prim.IsValid():
         print("[ERROR] Không thể load UR5 USD reference.")
-        sim_app.close()
+        simulation_app.close()
         return
 
     # Gán tọa độ gốc cho UR5
@@ -120,7 +130,7 @@ def main():
     print(f"\n[SUCCESS] Đã tạo và lưu thành công Scene lắp ráp mới tại: {save_path}")
     print(" Bạn có thể mở tệp USD này trực tiếp bằng Isaac Sim để kiểm tra visual.")
     
-    sim_app.close()
+    simulation_app.close()
 
 if __name__ == "__main__":
     main()
