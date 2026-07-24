@@ -25,6 +25,7 @@ except (ImportError, Exception):
         sys.exit(1)
 
 import omni
+import numpy as np
 from omni.isaac.core import SimulationContext
 from omni.isaac.core.utils.stage import create_new_stage, save_stage, add_reference_to_stage
 from omni.isaac.core.utils.prims import create_prim, define_prim
