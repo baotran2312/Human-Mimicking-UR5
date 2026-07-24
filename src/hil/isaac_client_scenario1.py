@@ -76,10 +76,12 @@ class HILSimulationScenario1:
         self.tau_mean = 0.150  # 150ms mean delay
         self.jitter_amp = 0.050  # 50ms jitter
         
-        # Virtual robot states (Arm TCP position)
+        # Trạng thái của Robot ảo trong mô phỏng (Arm TCP position)
         self.x_curr_std = np.array([0.18, 0.40, 0.90])
         self.x_curr_prop = np.array([0.18, 0.40, 0.90])
         self.prev_pos_filt = None
+        self.vd_filt_smooth = np.zeros(3)
+        self.T_vd = 0.10
         
         # Controller gains
         self.K_p = 5.0 * np.eye(3)
@@ -289,12 +291,15 @@ class HILSimulationScenario1:
                     if pos_filt is None:
                         pos_filt = self.x_curr_prop
                     
-                    # Compute feedforward velocity
+                    # Compute feedforward velocity and filter it to eliminate chattering from discrete slope jumps
                     if self.prev_pos_filt is not None:
-                        vd_filt = (pos_filt - self.prev_pos_filt) / dt
-                        vd_filt = np.clip(vd_filt, -0.5, 0.5)
+                        vd_filt_raw = (pos_filt - self.prev_pos_filt) / dt
+                        vd_filt_raw = np.clip(vd_filt_raw, -0.5, 0.5)
+                        
+                        alpha_vd = dt / (self.T_vd + dt)
+                        self.vd_filt_smooth = (1.0 - alpha_vd) * self.vd_filt_smooth + alpha_vd * vd_filt_raw
                     else:
-                        vd_filt = np.zeros(3)
+                        self.vd_filt_smooth = np.zeros(3)
                     self.prev_pos_filt = pos_filt.copy()
                     
                     e_prop = pos_filt - self.x_curr_prop
@@ -307,7 +312,8 @@ class HILSimulationScenario1:
                     else:
                         e_prop_delayed = e_prop
                     
-                    q_dot_prop_step = vd_filt + self.K_p.dot(e_prop) + self.K_d.dot(e_prop_delayed)
+                    # Proposed CLIK control law with smoothed feedforward term
+                    q_dot_prop_step = self.vd_filt_smooth + self.K_p.dot(e_prop) + self.K_d.dot(e_prop_delayed)
                     self.x_curr_prop += q_dot_prop_step * dt
                     self.q_dot_prop_history.append(np.tile(q_dot_prop_step[:1], 6))
                     
