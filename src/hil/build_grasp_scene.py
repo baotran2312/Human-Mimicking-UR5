@@ -40,16 +40,17 @@ def main():
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     
     # 2. Định nghĩa các đường dẫn tệp USD của Arm và Hand
-    # (Đường dẫn tương đương trên máy PC Ubuntu, khuyến khích copy tệp vào thư mục data/assets)
-    pc_ref_dir = "/home/nhglab/Tri/Seqhandisaac"
-    ur5_usd_path = os.path.join(pc_ref_dir, "ur5only.usd")
-    hand_usd_path = os.path.join(pc_ref_dir, "DexterousHandBase.usd")
+    ws_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    ws_assets_dir = os.path.join(ws_dir, "data", "assets")
     
-    # Kiểm tra fallback nếu không tìm thấy ở đường dẫn mặc định
+    ur5_usd_path = os.path.join(ws_assets_dir, "ur5only.usd")
+    hand_usd_path = os.path.join(ws_assets_dir, "DexterousHandBase.usd")
+    
+    # Fallback nếu không tìm thấy ở workspace thì dùng đường dẫn cũ trên PC
     if not os.path.exists(ur5_usd_path):
-        # Kiểm tra thử trong thư mục workspace hiện tại
-        ur5_usd_path = "data/assets/ur5only.usd"
-        hand_usd_path = "data/assets/DexterousHandBase.usd"
+        pc_ref_dir = "/home/nhglab/Tri/Seqhandisaac"
+        ur5_usd_path = os.path.join(pc_ref_dir, "ur5only.usd")
+        hand_usd_path = os.path.join(pc_ref_dir, "DexterousHandBase.usd")
 
     print(f"[INFO] Đang tải UR5 Arm từ: {ur5_usd_path}")
     print(f"[INFO] Đang tải Dexterous Hand từ: {hand_usd_path}")
@@ -121,14 +122,15 @@ def main():
     physics_api = UsdPhysics.RigidBodyAPI.Apply(ball_prim)
     physics_api.CreateKinematicEnabledAttr().Set(True)
 
-    # 7. Lưu lại file Stage hoàn chỉnh
-    save_path = "/home/nhglab/Tri/Seqhandisaac/grasp_scene.usd"
-    # Fallback lưu vào thư mục dự án hiện tại
-    if not os.path.exists("/home/nhglab"):
-        save_path = "data/grasp_scene.usd"
-        
+    # 7. Lưu lại file Stage hoàn chỉnh vào workspace
+    save_path = os.path.join(ws_assets_dir, "grasp_scene.usd")
     save_stage(save_path)
+    
+    config_save_path = os.path.join(ws_dir, "config", "grasp_scene.usd")
+    save_stage(config_save_path)
+    
     print(f"\n[SUCCESS] Đã tạo và lưu thành công Scene lắp ráp mới tại: {save_path}")
+    print(f"[SUCCESS] Đã sao chép Scene lắp ráp vào config: {config_save_path}")
     print(" Bạn có thể mở tệp USD này trực tiếp bằng Isaac Sim để kiểm tra visual.")
     
     simulation_app.close()
