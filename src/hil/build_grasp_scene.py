@@ -47,62 +47,69 @@ def main():
     hand_usd_path = os.path.join(ws_assets_dir, "DexterousHandBase.usd")
     
     # Fallback nếu không tìm thấy ở workspace thì dùng đường dẫn cũ trên PC
-    if not os.path.exists(ur5_usd_path):
-        pc_ref_dir = "/home/nhglab/Tri/Seqhandisaac"
-        ur5_usd_path = os.path.join(pc_ref_dir, "ur5only.usd")
-        hand_usd_path = os.path.join(pc_ref_dir, "DexterousHandBase.usd")
-
-    print(f"[INFO] Đang tải UR5 Arm từ: {ur5_usd_path}")
-    print(f"[INFO] Đang tải Dexterous Hand từ: {hand_usd_path}")
-
-    # 3. Add Reference UR5 vào Prim `/World/UR5`
-    add_reference_to_stage(usd_path=ur5_usd_path, prim_path="/World/UR5")
-    ur5_prim = stage.GetPrimAtPath("/World/UR5")
-    if not ur5_prim.IsValid():
-        print("[ERROR] Không thể load UR5 USD reference.")
-        simulation_app.close()
-        return
-
-    # Gán tọa độ gốc cho UR5
-    xform_ur5 = UsdGeom.Xformable(ur5_prim)
-    xform_ur5.ClearXformOpOrder()
-    xform_ur5.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.0))
-    xform_ur5.AddRotateXYZOp().Set(Gf.Vec3f(0.0, 0.0, 0.0))
-
-    # 4. Tìm Prim khớp Wrist 3 của UR5 để làm điểm gắn Bàn tay
-    # Thông thường đường dẫn prim cổ tay có dạng: /World/UR5/wrist_3_link hoặc tương tự
-    wrist_prim_path = "/World/UR5/wrist_3_link"
-    wrist_prim = stage.GetPrimAtPath(wrist_prim_path)
+    ur5dex_usd_path = os.path.join(ws_assets_dir, "ur5dex.usd")
     
-    if not wrist_prim.IsValid():
-        # Fallback dò tìm wrist link
-        for prim in stage.Traverse():
-            if "wrist_3" in prim.GetName() or "wrist_3_link" in prim.GetName():
-                wrist_prim_path = prim.GetPath().pathString
-                wrist_prim = prim
-                print(f"[INFO] Đã tìm thấy Wrist Prim tại: {wrist_prim_path}")
-                break
-                
-    if not wrist_prim.IsValid():
-        # Nếu vẫn không tìm thấy, gắn Hand trực tiếp vào gốc World và dịch chuyển tương đối
-        wrist_prim_path = "/World"
-        print("[WARN] Không tìm thấy wrist_3_link của UR5. Gắn Bàn tay trực tiếp vào /World.")
-
-    # 5. Gắn Reference Bàn tay khéo léo (Dexterous Hand) vào dưới wrist link
-    hand_prim_path = f"{wrist_prim_path}/DexterousHand"
-    add_reference_to_stage(usd_path=hand_usd_path, prim_path=hand_prim_path)
-    hand_prim = stage.GetPrimAtPath(hand_prim_path)
-    
-    if hand_prim.IsValid():
-        # Căn chỉnh tư thế gá lắp của bàn tay (Translation & Rotation relative to wrist link)
-        xform_hand = UsdGeom.Xformable(hand_prim)
-        xform_hand.ClearXformOpOrder()
-        # Dịch chuyển nhô ra theo trục nối của cổ tay (thường là Z hoặc Y)
-        xform_hand.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.12)) # Dịch lên 12 cm
-        xform_hand.AddRotateXYZOp().Set(Gf.Vec3f(0.0, 90.0, 0.0)) # Xoay 90 độ để hướng lòng tay ra ngoài
-        print("[SUCCESS] Đã lắp gá ráp bàn tay khéo léo thành công vào UR5.")
+    if os.path.exists(ur5dex_usd_path):
+        print(f"[INFO] Tải Robot UR5 + Bàn tay khéo léo hoàn chỉnh từ: {ur5dex_usd_path}")
+        add_reference_to_stage(usd_path=ur5dex_usd_path, prim_path="/World/UR5")
     else:
-        print("[ERROR] Không thể load Dexterous Hand USD reference.")
+        if not os.path.exists(ur5_usd_path):
+            pc_ref_dir = "/home/nhglab/Tri/Seqhandisaac"
+            ur5_usd_path = os.path.join(pc_ref_dir, "ur5only.usd")
+            hand_usd_path = os.path.join(pc_ref_dir, "DexterousHandBase.usd")
+
+        print(f"[INFO] Đang tải UR5 Arm từ: {ur5_usd_path}")
+        print(f"[INFO] Đang tải Dexterous Hand từ: {hand_usd_path}")
+
+        # 3. Add Reference UR5 vào Prim `/World/UR5`
+        add_reference_to_stage(usd_path=ur5_usd_path, prim_path="/World/UR5")
+        ur5_prim = stage.GetPrimAtPath("/World/UR5")
+        if not ur5_prim.IsValid():
+            print("[ERROR] Không thể load UR5 USD reference.")
+            simulation_app.close()
+            return
+
+        # Gán tọa độ gốc cho UR5
+        xform_ur5 = UsdGeom.Xformable(ur5_prim)
+        xform_ur5.ClearXformOpOrder()
+        xform_ur5.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.0))
+        xform_ur5.AddRotateXYZOp().Set(Gf.Vec3f(0.0, 0.0, 0.0))
+
+        # 4. Tìm chính xác Prim Link cổ tay cuối cùng (wrist_3_link - LOẠI TRỪ JOINT)
+        wrist_link_prim = None
+        wrist_link_path = None
+        
+        # Danh sách ưu tiên các đường dẫn chuẩn tới link cuối của UR5
+        for candidate in ["/World/UR5/ur5/wrist_3_link", "/World/UR5/wrist_3_link"]:
+            p = stage.GetPrimAtPath(candidate)
+            if p.IsValid():
+                wrist_link_prim = p
+                wrist_link_path = candidate
+                break
+
+        if not wrist_link_prim:
+            # Fallback dò tìm prim là Link chứa 'wrist_3_link' hoặc 'flange' (LOẠI TRỪ PRIM JOINT)
+            for prim in stage.Traverse():
+                name = prim.GetName().lower()
+                if ("wrist_3_link" in name or "flange" in name) and "joint" not in name:
+                    wrist_link_prim = prim
+                    wrist_link_path = prim.GetPath().pathString
+                    break
+
+        if wrist_link_prim:
+            print(f"[SUCCESS] Đã tìm thấy Wrist 3 Link Prim tại: {wrist_link_path}")
+            hand_prim_path = f"{wrist_link_path}/DexterousHand"
+            add_reference_to_stage(usd_path=hand_usd_path, prim_path=hand_prim_path)
+            hand_prim = stage.GetPrimAtPath(hand_prim_path)
+            if hand_prim.IsValid():
+                xform_hand = UsdGeom.Xformable(hand_prim)
+                xform_hand.ClearXformOpOrder()
+                xform_hand.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.0))
+                xform_hand.AddRotateXYZOp().Set(Gf.Vec3f(0.0, 0.0, 0.0))
+                print(f"[SUCCESS] Đã gắn Bàn tay khéo léo vào đúng link cuối: {hand_prim_path}")
+        else:
+            print("[WARN] Không tìm thấy wrist_3_link. Gắn Bàn tay trực tiếp vào /World.")
+            add_reference_to_stage(usd_path=hand_usd_path, prim_path="/World/DexterousHand")
 
     # 6. Tạo quả bóng (Sphere) phục vụ kịch bản 2 chụp bóng
     ball_prim_path = "/World/ball"
