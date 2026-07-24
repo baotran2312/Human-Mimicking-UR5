@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+from datetime import datetime
 
 # Add site-packages search paths for pybullet
 for site_pkg in [
@@ -15,6 +16,7 @@ for site_pkg in [
 parser = argparse.ArgumentParser(description="Isaac Sim HIL Scenario 2 Dynamic Grasping Client")
 parser.add_argument("--ip", type=str, default="0.0.0.0", help="UDP bind IP address")
 parser.add_argument("--port", type=int, default=5005, help="UDP bind port")
+parser.add_argument("--usd", type=str, default="config/grasp_scene.usd", help="USD grasp scene path")
 try:
     from isaaclab.app import AppLauncher
     AppLauncher.add_app_launcher_args(parser)
@@ -86,10 +88,9 @@ class HILSimulationScenario2:
         self.tau_filt = self.tau_mean
         self.start_time = None
 
-        # Scenario 2 - Dynamic Ball definition
-        # Ball slowly oscillates in a circular trajectory
+        # Scenario 2 - Dynamic Ball definition (Oscillating suspended target)
         self.ball_pos = np.array([0.18, 0.45, 0.85])
-        self.ball_freq = 0.15  # 0.15 Hz oscillation
+        self.ball_freq = 0.15  # 0.15 Hz sinusoidal oscillation
 
         # Grasping state machine
         self.grasp_triggered_std = False
@@ -105,25 +106,49 @@ class HILSimulationScenario2:
         self.q_dot_std_history = []
         self.q_dot_prop_history = []
 
+        # CSV Logging Settings
+        self.csv_records = []
+        self.run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
         # HIL Simulation scene
         self.has_sim = HAS_ROBOT_SIM
         if self.has_sim:
-            print("[INFO] Building UR5 Robot + 19-DoF Hand + Suspended Ball in Isaac Sim...")
+            usd_path = args_cli.usd
+            if not os.path.exists(usd_path):
+                usd_path = os.path.join(os.path.dirname(__file__), "..", "..", "config", "grasp_scene.usd")
+            
+            print(f"[INFO] Initializing Isaac Sim Scene from: {usd_path}")
             self.device = args_cli.device
             self.sim, self.robot, self.objects = build_scene(device=self.device, with_objects=True)
             if not args_cli.headless:
                 self.sim.set_camera_view(eye=CAMERA_POS, target=camera_target(1.2))
             self.physics_dt = self.sim.get_physics_dt()
             self.arm_ids, _ = self.robot.find_joints(ARM_JOINTS, preserve_order=True)
+            self.hand_ids = {}
+            for finger_name, joint_names in FINGER_JOINTS.items():
+                ids, _ = self.robot.find_joints(joint_names, preserve_order=True)
+                self.hand_ids[finger_name] = ids
             
             urdf_path = "config/ur5dex.urdf"
             if not os.path.exists(urdf_path):
                 urdf_path = os.path.join(os.path.dirname(__file__), "..", "..", "config", "ur5dex.urdf")
             self.solver = RetargetingSolver(urdf_path)
             self.q = self.robot.data.default_joint_pos.clone()
+            
+            HOME_ARM = [1.5708, -1.5708, 1.5708, 0.0, 1.5708, 0.0]
+            self.q[:, self.arm_ids] = torch.tensor(HOME_ARM, device=self.device)
+            self.robot.write_joint_state_to_sim(self.q, torch.zeros_like(self.q))
+            self.robot.set_joint_position_target(self.q)
+            self.robot.write_data_to_sim()
+            
+            for _ in range(60):
+                self.sim.step()
+                self.robot.update(self.physics_dt)
+                for o in self.objects.values():
+                    o.update(self.physics_dt)
 
     def update_ball(self, elapsed_time):
-        """Simulates the dynamic suspended ball oscillation"""
+        """Simulates the dynamic suspended ball oscillation in 3D space"""
         r = 0.08  # 8cm oscillation radius
         self.ball_pos[0] = 0.18 + r * np.cos(2 * np.pi * self.ball_freq * elapsed_time)
         self.ball_pos[1] = 0.45 + r * np.sin(2 * np.pi * self.ball_freq * elapsed_time)
@@ -151,31 +176,62 @@ class HILSimulationScenario2:
                 return pos_interp, quat_interp, flex_interp
         return history[-1]["pos"], history[-1]["quat"], history[-1]["flex"]
 
-    def save_summary(self):
+    def save_csv(self):
         import csv
         os.makedirs("data", exist_ok=True)
-        summary_file = os.path.join("data", "hil_scenario2_summary_latest.csv")
-        with open(summary_file, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement"])
-            writer.writerow(["Grasp_Success", "Yes" if self.grasp_success_std else "No", "Yes" if self.grasp_success_prop else "No", "N/A"])
-            writer.writerow(["Time_to_Grasp_s", round(self.ttg_std, 2), round(self.ttg_prop, 2), round(self.ttg_std - self.ttg_prop, 2)])
-            mae_std = np.mean(np.linalg.norm(self.err_std_history, axis=1)) * 1000 if self.err_std_history else 0.0
-            mae_prop = np.mean(np.linalg.norm(self.err_prop_history, axis=1)) * 1000 if self.err_prop_history else 0.0
-            writer.writerow(["Dynamic_MAE_mm", round(mae_std, 2), round(mae_prop, 2), round(((mae_std-mae_prop)/mae_std)*100, 1) if mae_std > 0 else 0.0])
-        print(f"\n[INFO] Saved Scenario 2 summary to: {summary_file}")
+        ts = self.run_timestamp
+        
+        csv_file = os.path.join("data", f"hil_scenario2_results_{ts}.csv")
+        csv_file_latest = os.path.join("data", "hil_scenario2_results_latest.csv")
+        
+        summary_file = os.path.join("data", f"hil_scenario2_summary_{ts}.csv")
+        summary_file_latest = os.path.join("data", "hil_scenario2_summary_latest.csv")
+
+        # 1. Export detailed frame-by-frame data
+        if self.csv_records:
+            fieldnames = list(self.csv_records[0].keys())
+            for path in [csv_file, csv_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerows(self.csv_records)
+            print(f"\n[INFO] Successfully exported {len(self.csv_records)} rows to: {csv_file}")
+        else:
+            fieldnames = ["timestamp", "ball_x", "ball_y", "ball_z", "std_x", "std_y", "std_z", "prop_x", "prop_y", "prop_z", "dist_std_mm", "dist_prop_mm", "delay_ms"]
+            for path in [csv_file, csv_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
+
+        # 2. Export summary KPIs
+        if self.err_std_history and self.err_prop_history:
+            mae_std = np.mean(np.linalg.norm(self.err_std_history, axis=1)) * 1000
+            mae_prop = np.mean(np.linalg.norm(self.err_prop_history, axis=1)) * 1000
+            impr_mae = round(((mae_std - mae_prop) / mae_std) * 100, 1) if mae_std > 0 else 0.0
+            
+            for path in [summary_file, summary_file_latest]:
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["Metric", "AnyTeleop_Standard", "Proposed_CLIK", "Improvement"])
+                    writer.writerow(["Grasp_Success", "Yes" if self.grasp_success_std else "No", "Yes" if self.grasp_success_prop else "No", "N/A"])
+                    writer.writerow(["Time_to_Grasp_s", round(self.ttg_std, 2), round(self.ttg_prop, 2), round(self.ttg_std - self.ttg_prop, 2)])
+                    writer.writerow(["Dynamic_MAE_mm", round(mae_std, 2), round(mae_prop, 2), f"{impr_mae}%"])
+            print(f"[INFO] Saved Scenario 2 summary to: {summary_file}")
 
     def run(self):
         dt = 0.01
         print("\n==================================================================")
         print(" PC RECEIVER (HIL SCENARIO 2): DYNAMIC GRASPING SIMULATOR...")
-        print(" Guide your hand on the Laptop webcam to reach the oscillating ball!")
+        print(" Using scene: config/grasp_scene.usd")
+        print(" Guide your hand on Laptop camera to grasp the oscillating ball!")
         print("==================================================================\n")
 
         try:
+            step_count = 0
             while self.running and (simulation_app is None or simulation_app.is_running()):
                 loop_start = time.time()
                 curr_real_time = time.time()
+                step_count += 1
 
                 # 1. Read non-blocking UDP packets
                 while True:
@@ -214,7 +270,7 @@ class HILSimulationScenario2:
                     except Exception:
                         break
 
-                # 2. Control execution
+                # 2. Control execution & physics updates
                 if self.latest_pkt_time is not None:
                     if self.start_time is None:
                         self.start_time = curr_real_time
@@ -227,26 +283,22 @@ class HILSimulationScenario2:
 
                     # --- A. STANDARD CONTROL ---
                     t_target_raw = t_laptop - self.latest_delay
-                    pos_raw, quat_raw, _ = self.interpolate_target_position(t_target_raw)
+                    pos_raw, quat_raw, flex_raw = self.interpolate_target_position(t_target_raw)
                     if pos_raw is None:
                         pos_raw = self.x_curr_std
 
-                    # We evaluate tracking relative to the dynamic ball to measure success
                     dist_to_ball_std = np.linalg.norm(self.x_curr_std - self.ball_pos)
                     self.err_std_history.append(self.x_curr_std - self.ball_pos)
                     
                     if not self.grasp_triggered_std:
                         q_dot_std_step = 6.0 * (pos_raw - self.x_curr_std)
-                        # Grasp triggers if hand gets within 4.5 cm of the ball
                         if dist_to_ball_std <= 0.045:
                             self.grasp_triggered_std = True
                             self.ttg_std = elapsed
-                            # Check success: must not overshoot/collide too fast
                             if np.linalg.norm(q_dot_std_step) < 0.25:
                                 self.grasp_success_std = True
                             print(f"[EVENT] Standard Controller reached ball at {self.ttg_std:.2f}s! Success: {self.grasp_success_std}")
                     else:
-                        # Close fingers (stay at position)
                         q_dot_std_step = np.zeros(3)
 
                     self.x_curr_std += q_dot_std_step * dt
@@ -257,7 +309,7 @@ class HILSimulationScenario2:
                     self.tau_filt += tau_filt_dot * dt
 
                     t_target_filt = t_laptop - self.tau_filt
-                    pos_filt, _, _ = self.interpolate_target_position(t_target_filt)
+                    pos_filt, _, flex_filt = self.interpolate_target_position(t_target_filt)
                     if pos_filt is None:
                         pos_filt = self.x_curr_prop
 
@@ -284,43 +336,68 @@ class HILSimulationScenario2:
                         if dist_to_ball_prop <= 0.045:
                             self.grasp_triggered_prop = True
                             self.ttg_prop = elapsed
-                            # Proposed CLIK is smooth, so velocity at contact is low
                             if np.linalg.norm(q_dot_prop_step) < 0.20:
                                 self.grasp_success_prop = True
                             print(f"[EVENT] Proposed Controller reached ball at {self.ttg_prop:.2f}s! Success: {self.grasp_success_prop}")
                     else:
-                        # Close fingers and hold
                         q_dot_prop_step = np.zeros(3)
 
                     self.x_curr_prop += q_dot_prop_step * dt
                     self.q_dot_prop_history.append(np.tile(q_dot_prop_step[:1], 6))
 
+                    # Append metrics to CSV records
+                    self.csv_records.append({
+                        "timestamp": f"{elapsed:.3f}",
+                        "ball_x": round(self.ball_pos[0], 4),
+                        "ball_y": round(self.ball_pos[1], 4),
+                        "ball_z": round(self.ball_pos[2], 4),
+                        "std_x": round(self.x_curr_std[0], 4),
+                        "std_y": round(self.x_curr_std[1], 4),
+                        "std_z": round(self.x_curr_std[2], 4),
+                        "prop_x": round(self.x_curr_prop[0], 4),
+                        "prop_y": round(self.x_curr_prop[1], 4),
+                        "prop_z": round(self.x_curr_prop[2], 4),
+                        "dist_std_mm": round(dist_to_ball_std * 1000, 2),
+                        "dist_prop_mm": round(dist_to_ball_prop * 1000, 2),
+                        "delay_ms": round(self.latest_delay * 1000, 1)
+                    })
+
                     # Command Simulator
                     if self.has_sim:
                         try:
-                            # Move ball in simulation
-                            self.objects["ball"].set_position(self.ball_pos)
+                            # 1. Update ball position in Isaac Sim physics
+                            if "ball" in self.objects:
+                                self.objects["ball"].set_position(self.ball_pos)
                             
-                            # Command Robot Arm
-                            arm_angles = self.solver.solve_arm_ik(self.x_curr_prop, quat_raw)
-                            self.q[:, self.arm_ids] = torch.tensor(arm_angles, device=self.device)
+                            # 2. Retarget arm angles & wrist orientation
+                            q_arm_prop = self.solver.solve_arm_ik(self.x_curr_prop, quat_raw)
+                            self.q[:, self.arm_ids] = torch.tensor(q_arm_prop, device=self.device)
                             
-                            # Grasp trigger closing fingers
-                            flex_val = 1.309 if self.grasp_triggered_prop else 0.0
-                            for finger_name, ids in self.hand_ids.items():
-                                for hid in ids[1:]:
-                                    self.q[0, hid] = flex_val
+                            # 3. Retarget hand fingers + abduction
+                            hand_angles = self.solver.solve_hand_orientation(flex_filt)
+                            for fname, ids in self.hand_ids.items():
+                                if fname in hand_angles:
+                                    vals = hand_angles[fname]
+                                    for idx, hid in enumerate(ids):
+                                        if idx < len(vals):
+                                            self.q[0, hid] = float(vals[idx])
+                                            
+                            if self.grasp_triggered_prop:
+                                # Close fingers when grasp triggered
+                                for fname, ids in self.hand_ids.items():
+                                    for hid in ids[1:]:
+                                        self.q[0, hid] = 1.309
                         except Exception:
                             pass
 
-                    # Report status
-                    if len(self.err_std_history) % 200 == 0:
-                        print(f"Time: {elapsed:.1f}s | Ball Pos: [{self.ball_pos[0]:.2f}, {self.ball_pos[1]:.2f}, {self.ball_pos[2]:.2f}]")
+                    # Periodic reporting & CSV saving
+                    if step_count % 200 == 0:
+                        print(f"Time: {elapsed:.1f}s | Ball: [{self.ball_pos[0]:.2f}, {self.ball_pos[1]:.2f}, {self.ball_pos[2]:.2f}]")
                         print(f"            | Standard Dist: {dist_to_ball_std*1000:.1f}mm | Proposed Dist: {dist_to_ball_prop*1000:.1f}mm")
                         print("-" * 75)
-                        self.save_summary()
+                        self.save_csv()
 
-                # Step simulation
+                # Step simulation continuously (prevents Isaac Sim 5.1 timeout)
                 if self.has_sim:
                     self.robot.set_joint_position_target(self.q)
                     self.robot.write_data_to_sim()
@@ -334,14 +411,14 @@ class HILSimulationScenario2:
                 time.sleep(sleep_time)
 
         except KeyboardInterrupt:
-            print("\n[INFO] Stopped.")
+            print("\n[INFO] Stopped by user.")
         finally:
             self.running = False
             self.sock.close()
-            self.save_summary()
+            self.save_csv()
             if simulation_app is not None:
                 simulation_app.close()
-            print("[INFO] Exit.")
+            print("[INFO] Exit completed.")
 
 if __name__ == "__main__":
     sim = HILSimulationScenario2()
