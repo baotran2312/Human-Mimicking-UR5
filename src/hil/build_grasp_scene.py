@@ -29,7 +29,7 @@ import numpy as np
 from omni.isaac.core import SimulationContext
 from omni.isaac.core.utils.stage import create_new_stage, save_stage, add_reference_to_stage
 from omni.isaac.core.utils.prims import create_prim, define_prim
-from pxr import UsdGeom, Gf, UsdPhysics
+from pxr import UsdGeom, Gf, UsdPhysics, UsdLux
 
 def main():
     # 1. Tạo Stage mới cho Scene
@@ -117,7 +117,7 @@ def main():
         prim_path=ball_prim_path,
         prim_type="Sphere",
         position=np.array([0.18, 0.45, 0.85]),
-        attributes={"radius": 0.035} # Bán kính bóng 3.5 cm (Đường kính 7cm giống bóng tennis)
+        attributes={"radius": 0.035} # Bán kính bóng 3.5 cm (Đường kính 7cm)
     )
     ball_prim = stage.GetPrimAtPath(ball_prim_path)
     
@@ -125,11 +125,24 @@ def main():
     color_op = UsdGeom.Gprim(ball_prim).GetDisplayColorAttr()
     color_op.Set([Gf.Vec3f(1.0, 0.35, 0.0)]) # Orange-Red
 
-    # Thêm đặc tính Vật lý Rigid Body (Kinematic) cho quả bóng để điều khiển vị trí
+    # Thêm đặc tính Vật lý Rigid Body (Kinematic) để quả bóng không bị rơi tự do do trọng lực
     physics_api = UsdPhysics.RigidBodyAPI.Apply(ball_prim)
     physics_api.CreateKinematicEnabledAttr().Set(True)
+    
+    # 7. Thêm Ánh sáng môi trường (DomeLight & DistantLight) và Sàn (GroundPlane)
+    dome_light = UsdLux.DomeLight.Define(stage, "/World/DomeLight")
+    dome_light.CreateIntensityAttr().Set(1200.0)
+    
+    distant_light = UsdLux.DistantLight.Define(stage, "/World/DistantLight")
+    distant_light.CreateIntensityAttr().Set(1500.0)
+    distant_light.CreateAngleAttr().Set(0.53)
 
-    # 7. Lưu lại file Stage hoàn chỉnh vào workspace
+    create_prim(
+        prim_path="/World/defaultGroundPlane",
+        prim_type="GroundPlane"
+    )
+
+    # 8. Lưu lại file Stage hoàn chỉnh vào workspace
     save_path = os.path.join(ws_assets_dir, "grasp_scene.usd")
     save_stage(save_path)
     

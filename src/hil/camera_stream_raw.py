@@ -6,6 +6,7 @@ import sys
 import os
 import argparse
 import math
+import numpy as np
 
 try:
     import mediapipe as mp
@@ -67,8 +68,32 @@ def main():
                 target_y = 0.5 + (1.0 - wrist.y - 0.5) * 0.4
                 target_z = 0.9 - (wrist.z * 0.5)
                 
-                # Quaternions hướng mặc định (0, 0, 0, 1)
-                qx, qy, qz, qw = 0.0, 0.0, 0.0, 1.0
+                # Tính toán hướng 3D thực tế của bàn tay từ MediaPipe landmarks
+                p0 = np.array([hand_landmarks.landmark[0].x, hand_landmarks.landmark[0].y, hand_landmarks.landmark[0].z])
+                p5 = np.array([hand_landmarks.landmark[5].x, hand_landmarks.landmark[5].y, hand_landmarks.landmark[5].z])
+                p9 = np.array([hand_landmarks.landmark[9].x, hand_landmarks.landmark[9].y, hand_landmarks.landmark[9].z])
+                p17 = np.array([hand_landmarks.landmark[17].x, hand_landmarks.landmark[17].y, hand_landmarks.landmark[17].z])
+                
+                v_palm = p9 - p0
+                v_len = np.linalg.norm(v_palm)
+                y_axis = v_palm / v_len if v_len > 1e-6 else np.array([0.0, 1.0, 0.0])
+                
+                v_lat = p17 - p5
+                z_axis = np.cross(y_axis, v_lat)
+                z_len = np.linalg.norm(z_axis)
+                z_axis = z_axis / z_len if z_len > 1e-6 else np.array([0.0, 0.0, 1.0])
+                x_axis = np.cross(y_axis, z_axis)
+                
+                R = np.column_stack((x_axis, -y_axis, -z_axis))
+                tr = np.trace(R)
+                if tr > 0:
+                    S = math.sqrt(tr + 1.0) * 2
+                    qw = 0.25 * S
+                    qx = (R[2, 1] - R[1, 2]) / S
+                    qy = (R[0, 2] - R[2, 0]) / S
+                    qz = (R[1, 0] - R[0, 1]) / S
+                else:
+                    qx, qy, qz, qw = 1.0, 0.0, 0.0, 0.0
                 
                 # Thu thập độ gập (flexion) của 5 ngón tay (mỗi ngón 1 float từ 0.0 đến 1.0)
                 # Dùng làm tọa độ khớp ngón tay thô

@@ -62,9 +62,16 @@ class RetargetingSolver:
         
         print(f"[INFO] URDF loaded successfully. Found {len(self.arm_joint_indices)} UR5 joints and {len(self.finger_joint_indices)} active finger joints.")
 
-    def solve_arm_ik(self, target_pos, target_quat):
+    def solve_arm_ik(self, target_pos, target_quat=None):
         """Giải động học ngược (IK) cho 6 khớp cánh tay UR5"""
-        # Sử dụng giải thuật IK của PyBullet
+        if target_quat is None:
+            target_quat = [1.0, 0.0, 0.0, 0.0]
+        elif len(target_quat) == 4:
+            qx, qy, qz, qw = target_quat
+            # Nếu quaternion truyền vào là [0, 0, 0, 1], tự động xoay 180 độ quanh X để bàn tay hướng xuống sàn/quả bóng
+            if abs(qx) < 1e-3 and abs(qy) < 1e-3 and abs(qz) < 1e-3 and abs(qw - 1.0) < 1e-3:
+                target_quat = [1.0, 0.0, 0.0, 0.0]
+
         ik_angles = p.calculateInverseKinematics(
             self.robot_id,
             self.tcp_link_index,
@@ -73,7 +80,6 @@ class RetargetingSolver:
             maxNumIterations=100,
             residualThreshold=1e-4
         )
-        # Chỉ lấy 6 góc khớp của UR5
         return [ik_angles[i] for i in range(6)]
 
     def map_finger_joints(self, landmarks):
